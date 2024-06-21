@@ -13,8 +13,8 @@ import {
 
 export default function Home() {
   return (
-    <main className="flex min-h-[calc(100vh_-_theme(spacing.40))] w-full items-center justify-center">
-      <div className="flex items-start justify-center space-x-8">
+    <main className="flex min-h-[calc(100vh_-_theme(spacing.40))] w-full items-center justify-center py-8 md:py-0">
+      <div className="flex flex-col items-start justify-center space-y-8 md:flex-row md:space-x-8 md:space-y-0">
         <div>
           <Carousel>
             <CarouselNext className="top-1/3 -translate-y-1/3" />
