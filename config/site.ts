@@ -28,20 +28,15 @@ export const siteConfig = {
     },
   ] as NavItem[],
   footerLinks: {
-    left: [
-      {
-        name: 'struggling? check out easypeasy',
-        url: 'https://easypeasymethod.org',
-      },
-    ] as NavItem[],
+    left: [] as NavItem[],
     right: [
       {
         name: 'quiteasily',
         url: 'https://quiteasily.org/',
       },
       {
-        name: 'peaceful',
-        url: 'https://peacefulfoundation.org/',
+        name: 'easypeasy',
+        url: 'https://easypeasymethod.org/',
       },
     ] as NavItem[],
   },
