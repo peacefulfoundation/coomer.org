@@ -18,12 +18,6 @@ import { cn } from '@/lib/utils';
 
 import { Button } from '@/components/ui/button';
 
-// https://shadcn-extension.vercel.app/docs/carousel
-
-// https://shadcn-extension.vercel.app/docs/carousel
-
-// https://shadcn-extension.vercel.app/docs/carousel
-
 type CarouselContextProps = {
   carouselOptions?: EmblaOptionsType;
   orientation?: 'vertical' | 'horizontal';
