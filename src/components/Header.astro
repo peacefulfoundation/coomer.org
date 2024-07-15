@@ -1,0 +1,16 @@
+---
+import { SITE, HEADER_LINKS } from '@/consts';
+---
+
+<header class="center container flex h-20 w-full items-center justify-between">
+  <h1 class="block p-2 text-2xl font-bold">{SITE.TITLE}</h1>
+  <div class="flex space-x-2 font-semibold">
+    {
+      HEADER_LINKS.map((ITEM) => (
+        <a class="p-2 underline-offset-4 hover:underline" href={ITEM.HREF}>
+          {ITEM.TITLE}
+        </a>
+      ))
+    }
+  </div>
+</header>

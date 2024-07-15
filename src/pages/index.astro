@@ -1,0 +1,38 @@
+---
+import Layout from '@/layouts/Layout.astro';
+---
+
+<Layout>
+  <main
+    class='flex min-h-[calc(100vh_-_theme(spacing.40))] w-full items-center justify-center py-8 md:py-0'
+  >
+    <div class='grid grid-cols-2 items-center'>
+      <div class='col-span-1'>
+        <img
+          src='/favicon.png'
+          class='size-56'
+        />
+      </div>
+      <div class='col-span-1 flex max-w-80 flex-col space-y-2'>
+        <h2 class='text-2xl font-semibold'>Here's my favorite meme.</h2>
+        <p class='text-lg font-thin'>
+          You can browse thousands of coomer memes at the link below.
+        </p>
+        <br />
+        <p class='text-lg font-thin'>
+          We're using them to fundraise widespread action against pornography.
+        </p>
+        <p class='text-lg font-thin'>
+          There's also an ethos discussing ego-escalation.
+        </p>
+        <br />
+
+        <a
+          href='https://memes.coomer.org'
+          class='w-fit items-center rounded-full border-[1.5px] border-black px-3 py-1.5 font-semibold hover:bg-black hover:text-white'
+          >more memes</a
+        >
+      </div>
+    </div>
+  </main>
+</Layout>

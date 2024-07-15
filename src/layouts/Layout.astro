@@ -1,0 +1,30 @@
+---
+import BaseHead from '@/components/BaseHead.astro';
+import Footer from '@/components/Footer.astro';
+import Header from '@/components/Header.astro';
+import { SITE } from '@/consts';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang='en'>
+  <head>
+    <BaseHead
+      title={title ? `${title} | ${SITE.TITLE}` : `${SITE.TITLE}`}
+      description={description ?? SITE.DESCRIPTION}
+    />
+  </head>
+  <body
+    class='bg-background relative flex min-h-screen flex-col font-sans antialiased'
+  >
+    <Header />
+    <div class='container flex-1'><slot /></div>
+    <Footer />
+  </body>
+</html>
