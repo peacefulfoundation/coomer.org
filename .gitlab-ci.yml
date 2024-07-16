@@ -1,11 +1,13 @@
-image: busybox
+image: node:lts
+
+before_script:
+  - npm ci
 
 pages:
-  stage: deploy
   script:
-    - echo "The site will be deployed to $CI_PAGES_URL"
+    - npm run build
   artifacts:
     paths:
       - public
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
