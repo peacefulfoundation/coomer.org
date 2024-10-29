@@ -1,5 +1,4 @@
-import { NavLink } from "@/types";
-
+import { NavLink } from '@/types';
 
 export type SiteConfig = typeof siteConfig;
 
@@ -15,7 +14,7 @@ export const siteConfig = {
     {
       title: 'ethos',
       href: '/ethos',
-    }
+    },
   ] as NavLink[],
   footerLinks: {
     left: [] as NavLink[],
@@ -27,7 +26,7 @@ export const siteConfig = {
       {
         title: 'easypeasy',
         href: 'https://easypeasy.org',
-      }
+      },
     ] as NavLink[],
-  }
-}
+  },
+};

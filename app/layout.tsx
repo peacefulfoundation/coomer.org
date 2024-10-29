@@ -5,12 +5,12 @@ import { Metadata, Viewport } from 'next';
 import { fontMono, fontSans } from '@/lib/fonts';
 import { cn } from '@/lib/utils';
 
+import { SiteFooter } from '@/components/site-footer';
+import { SiteHeader } from '@/components/site-header';
 import { TailwindIndicator } from '@/components/tailwind-indicator';
 import { ThemeProvider } from '@/components/theme-provider';
 
 import '@/styles/globals.css';
-import { SiteHeader } from '@/components/site-header';
-import { SiteFooter } from '@/components/site-footer';
 
 export const metadata: Metadata = {
   title: {
@@ -18,9 +18,7 @@ export const metadata: Metadata = {
     template: `%s - ${siteConfig.title}`,
   },
   description: siteConfig.description,
-  authors: [
-    {name: siteConfig.author}
-  ],
+  authors: [{ name: siteConfig.author }],
   icons: {
     icon: '/favicon.png',
   },
@@ -44,12 +42,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <head />
         <body
           className={cn(
-            'bg-background relative flex min-h-screen flex-col font-sans antialiased',
+            'relative flex min-h-screen flex-col bg-background font-sans antialiased',
             fontSans.variable,
             fontMono.variable
           )}
         >
-          <ThemeProvider attribute="class" forcedTheme='light'>
+          <ThemeProvider attribute="class" forcedTheme="light">
             <SiteHeader />
             <div className="container flex-1">{children}</div>
             <SiteFooter />
