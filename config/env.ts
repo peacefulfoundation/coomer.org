@@ -3,22 +3,23 @@ interface RuntimeEnv {
   CDN_URL: string;
 }
 
-function createEnv(
-  envVars: Record<keyof RuntimeEnv, string | undefined>
-): RuntimeEnv {
-  const config: Partial<RuntimeEnv> = {};
+function createEnv(): RuntimeEnv {
+  if (typeof window === 'undefined') {
+    require('dotenv').config({ path: '.env' });
+  }
 
-  for (const [key, value] of Object.entries(envVars)) {
-    if (!value) {
+  const config: Partial<RuntimeEnv> = {
+    WORKER_URL: process.env.NEXT_PUBLIC_WORKER_URL,
+    CDN_URL: process.env.NEXT_PUBLIC_CDN_URL,
+  };
+
+  for (const [key, value] of Object.entries(config)) {
+    if (value === undefined) {
       throw new Error(`Environment variable ${key} is not defined.`);
     }
-    config[key as keyof RuntimeEnv] = value;
   }
 
   return config as RuntimeEnv;
 }
 
-export const runtimeEnv = createEnv({
-  WORKER_URL: process.env.WORKER_URL,
-  CDN_URL: process.env.CDN_URL,
-});
+export const runtimeEnv = createEnv();

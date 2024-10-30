@@ -2,9 +2,11 @@ import { siteConfig } from '@/config/site';
 
 import Image from 'next/image';
 
+// import PostList from '@/components/post-list';
+
 export default function Home() {
   return (
-    <main className="flex min-h-[calc(100vh_-_theme(spacing.40))] w-full items-center justify-center space-y-4 py-8 md:py-0">
+    <main className="flex min-h-[calc(100vh_-_theme(spacing.40))] w-full flex-col items-center justify-center space-y-4 py-8 md:py-0">
       <div className="grid grid-flow-row items-center gap-4 md:grid-flow-col">
         <div className="col-span-1 flex aspect-square items-center justify-center p-8">
           <Image
@@ -45,6 +47,7 @@ export default function Home() {
           </div>
         </div>
       </div>
+      {/* <PostList /> */}
     </main>
   );
 }

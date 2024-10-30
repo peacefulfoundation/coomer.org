@@ -1,10 +1,14 @@
 'use client';
 
 import { runtimeEnv } from '@/config/env';
+import { siteConfig } from '@/config/site';
+import { Share2Icon } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
+import { RWebShare } from 'react-web-share';
 
 import { useEffect, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -35,7 +39,7 @@ export default function PostList() {
     setError(null);
     try {
       const url = new URL(`${runtimeEnv.WORKER_URL}/`);
-      url.searchParams.append('limit', '9');
+      url.searchParams.append('limit', '6');
       if (cursor) {
         url.searchParams.append('cursor', cursor);
       }
@@ -68,29 +72,47 @@ export default function PostList() {
   }, [inView, hasMore]);
 
   return (
-    <div className="container mx-auto p-4 pt-12">
+    <div className="container mx-auto max-w-screen-sm p-4 pt-12">
       <h1 className="mb-4 text-2xl font-bold">More memes? More memes.</h1>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="space-y-4">
         {posts.map((post) => (
-          <Card key={post.id}>
-            <CardContent className="p-4">
+          <Card key={post.id} className="overflow-hidden">
+            <CardContent className="p-0">
               <img
                 src={post.imageUrl}
                 alt={post.id}
-                className="mb-2 h-48 w-full rounded-md object-cover"
+                className="h-auto w-full"
                 loading="lazy"
               />
-              <p className="text-center text-sm font-medium">{post.id}</p>
+              <div className="flex items-center justify-between px-4 py-2">
+                <p className="text-left text-sm font-medium text-muted-foreground">
+                  {post.id}
+                </p>
+                <RWebShare
+                  data={{
+                    text: `check out this sick coomer meme (${post.id}): `,
+                    url: `${siteConfig.url}/${post.id}`,
+                  }}
+                >
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="rounded-full text-muted-foreground"
+                  >
+                    <Share2Icon />
+                  </Button>
+                </RWebShare>
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
       {loading && (
-        <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-4 space-y-4">
           {[...Array(3)].map((_, index) => (
             <Card key={index}>
-              <CardContent className="p-4">
-                <Skeleton className="mb-2 h-48 w-full" />
+              <CardContent className="p-0">
+                <Skeleton className="mb-4 h-72 w-full" />
                 <Skeleton className="mx-auto h-4 w-2/3" />
               </CardContent>
             </Card>
@@ -100,8 +122,8 @@ export default function PostList() {
       {error && <p className="mt-4 text-red-500">{error}</p>}
       {hasMore && <div ref={ref} className="mt-4 h-10" />}
       {!hasMore && (
-        <p className="mt-4 text-center text-gray-500">
-          You've reached the end! The edging is complete!
+        <p className="mt-4 text-center text-muted-foreground">
+          You've reached the end. The edging is complete!
         </p>
       )}
     </div>
