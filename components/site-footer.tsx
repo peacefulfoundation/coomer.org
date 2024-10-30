@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export function SiteFooter() {
   return (
-    <footer className="center container flex h-20 w-full items-center justify-between">
+    <footer className="center flex h-20 w-full items-center justify-between px-4 md:container">
       <div className="text-md flex space-x-2 font-semibold">
         {siteConfig.footerLinks.left.map((item, index) => (
           <Link

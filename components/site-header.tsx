@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export function SiteHeader() {
   return (
-    <header className="center container flex h-20 w-full items-center justify-between">
+    <header className="flex h-20 w-full items-center justify-between px-4 md:container">
       <Image
         src="/favicon.png"
         height={32}

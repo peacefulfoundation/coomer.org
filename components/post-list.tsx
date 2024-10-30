@@ -72,8 +72,8 @@ export default function PostList() {
   }, [inView, hasMore]);
 
   return (
-    <div className="container mx-auto max-w-screen-sm p-4 pt-12">
-      <h1 className="mb-4 text-2xl font-bold">More memes? More memes.</h1>
+    <div className="mx-auto w-full max-w-screen-sm py-12">
+      <h1 className="mb-4 text-xl font-bold">more memes? more memes.</h1>
       <div className="space-y-4">
         {posts.map((post) => (
           <Card key={post.id} className="overflow-hidden">
@@ -85,7 +85,7 @@ export default function PostList() {
                 loading="lazy"
               />
               <div className="flex items-center justify-between px-4 py-2">
-                <p className="text-left text-sm font-medium text-muted-foreground">
+                <p className="ml-1 text-left text-sm font-medium text-muted-foreground">
                   {post.id}
                 </p>
                 <RWebShare
@@ -110,10 +110,12 @@ export default function PostList() {
       {loading && (
         <div className="mt-4 space-y-4">
           {[...Array(3)].map((_, index) => (
-            <Card key={index}>
+            <Card key={index} className="w-full">
               <CardContent className="p-0">
-                <Skeleton className="mb-4 h-72 w-full" />
-                <Skeleton className="mx-auto h-4 w-2/3" />
+                <Skeleton className="h-72 w-full" />
+                <div className="flex justify-center">
+                  <Skeleton className="my-4 h-4 w-2/3" />
+                </div>
               </CardContent>
             </Card>
           ))}

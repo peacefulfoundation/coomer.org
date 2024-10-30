@@ -2,7 +2,7 @@ import { siteConfig } from '@/config/site';
 
 import Image from 'next/image';
 
-// import PostList from '@/components/post-list';
+import PostList from '@/components/post-list';
 
 export default function Home() {
   return (
@@ -47,7 +47,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      {/* <PostList /> */}
+      <PostList />
     </main>
   );
 }
