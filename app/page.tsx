@@ -30,7 +30,7 @@ export default function Home() {
 
           <div className="flex gap-3">
             <a
-              href="https://memes.coomer.org"
+              href="https://mega.nz/folder/0okFWToQ#hRLo1ucmRxWwXXaiSh4NCw"
               className="w-fit items-center rounded-full border-[1.5px] border-black px-4 py-1.5 font-semibold transition-colors duration-200 ease-in-out hover:bg-black hover:text-white"
             >
               more memes
