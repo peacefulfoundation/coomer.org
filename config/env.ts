@@ -1,5 +1,6 @@
 interface RuntimeEnv {
   WORKER_URL: string;
+  CDN_URL: string;
 }
 
 function createEnv(
@@ -19,4 +20,5 @@ function createEnv(
 
 export const runtimeEnv = createEnv({
   WORKER_URL: process.env.WORKER_URL,
+  CDN_URL: process.env.CDN_URL,
 });
