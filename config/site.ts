@@ -3,9 +3,17 @@ import { NavLink } from '@/types';
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
+  url: 'https://www.coomer.org',
   title: 'coomer.org',
   description: 'curated coomer memes',
   author: 'anon',
+  keywords: [
+    'coomer',
+    'memes',
+    'peacefulfoundation',
+    'easypeasy',
+    'quiteasily',
+  ],
   headerLinks: [
     {
       title: 'not an nft',

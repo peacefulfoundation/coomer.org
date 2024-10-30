@@ -13,14 +13,29 @@ import { ThemeProvider } from '@/components/theme-provider';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
+  generator: 'Next.js',
+
   title: {
     default: siteConfig.title,
     template: `%s - ${siteConfig.title}`,
   },
   description: siteConfig.description,
   authors: [{ name: siteConfig.author }],
+  creator: siteConfig.author,
+  keywords: siteConfig.keywords,
+
   icons: {
     icon: '/favicon.png',
+  },
+
+  openGraph: {
+    title: siteConfig.title,
+    description: siteConfig.description,
+    url: siteConfig.url,
+    siteName: siteConfig.url,
+    type: 'website',
+    images: '/favicon.png',
   },
 };
 
