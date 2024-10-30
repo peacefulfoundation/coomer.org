@@ -25,6 +25,7 @@ export const metadata: Metadata = {
   creator: siteConfig.author,
   keywords: siteConfig.keywords,
 
+  themeColor: '#576d00',
   icons: {
     icon: '/favicon.png',
   },
@@ -35,7 +36,13 @@ export const metadata: Metadata = {
     url: siteConfig.url,
     siteName: siteConfig.url,
     type: 'website',
-    images: '/favicon.png',
+    images: [
+      {
+        url: '/favicon.png',
+        width: 512,
+        height: 512,
+      },
+    ],
   },
 };
 
