@@ -1,11 +1,18 @@
+import { siteConfig } from '@/config/site';
+
 import Image from 'next/image';
 
 export default function Home() {
   return (
-    <main className="flex min-h-[calc(100vh_-_theme(spacing.40))] w-full items-center justify-center py-8 md:py-0">
+    <main className="flex min-h-[calc(100vh_-_theme(spacing.40))] w-full items-center justify-center space-y-4 py-8 md:py-0">
       <div className="grid grid-flow-row items-center gap-4 md:grid-flow-col">
         <div className="col-span-1 flex aspect-square items-center justify-center p-8">
-          <img src="/favicon.png" className="size-56" />
+          <Image
+            src="/favicon.png"
+            width={256}
+            height={256}
+            alt={siteConfig.title + 'logo'}
+          />
         </div>
         <div className="col-span-1 flex max-w-80 flex-col space-y-2">
           <h2 className="text-2xl font-bold">here's my favorite meme.</h2>
