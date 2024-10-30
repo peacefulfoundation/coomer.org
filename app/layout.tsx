@@ -25,9 +25,9 @@ export const metadata: Metadata = {
   creator: siteConfig.author,
   keywords: siteConfig.keywords,
 
-  themeColor: '#576d00',
   icons: {
     icon: '/favicon.png',
+    shortcut: '/favicon.png',
   },
 
   openGraph: {
@@ -44,12 +44,17 @@ export const metadata: Metadata = {
       },
     ],
   },
+
+  twitter: {
+    card: 'summary',
+    images: '/favicon.png',
+  },
 };
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
+    { media: '(prefers-color-scheme: light)', color: '#576d00' },
+    { media: '(prefers-color-scheme: dark)', color: '#576d00' },
   ],
 };
 
