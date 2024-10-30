@@ -12,6 +12,7 @@ export default function Home() {
             width={256}
             height={256}
             alt={siteConfig.title + 'logo'}
+            priority
           />
         </div>
         <div className="col-span-1 flex max-w-80 flex-col space-y-2">

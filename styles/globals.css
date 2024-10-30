@@ -69,4 +69,22 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+
+  img:not([src]) {
+    font-size: 0;
+    position: relative;
+  }
+
+  img:not([src]):after {
+    font-size: 18px;
+    border: 1px solid black;
+    box-sizing: border-box;
+    content: attr(alt);
+    z-index: -1;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
 }
