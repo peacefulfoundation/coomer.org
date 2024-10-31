@@ -8,6 +8,8 @@ import { RWebShare } from 'react-web-share';
 
 import { useEffect, useState } from 'react';
 
+import Image from 'next/image';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -59,7 +61,7 @@ export default function PostList() {
       setHasMore(!!data.cursor);
     } catch (err) {
       setError('An error occurred while fetching posts. Please try again.');
-      console.log(err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -78,12 +80,19 @@ export default function PostList() {
         {posts.map((post) => (
           <Card key={post.id} className="overflow-hidden">
             <CardContent className="p-0">
-              <img
-                src={post.imageUrl}
-                alt={post.id}
-                className="h-auto w-full"
-                loading="lazy"
-              />
+              <div className="relative w-full">
+                <div className="relative aspect-auto w-full">
+                  <Image
+                    src={post.imageUrl}
+                    alt={post.id}
+                    width={0}
+                    height={0}
+                    sizes="(max-width: 768px) 100vw, 600px"
+                    className="h-auto w-full"
+                    priority={posts.indexOf(post) < 2}
+                  />
+                </div>
+              </div>
               <div className="flex items-center justify-between px-4 py-2">
                 <p className="ml-1 text-left text-sm font-medium text-muted-foreground">
                   {post.id}
