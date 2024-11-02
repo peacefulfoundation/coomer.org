@@ -76,7 +76,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
         >
           <ThemeProvider attribute="class" forcedTheme="light">
             <SiteHeader />
-            <div className="mx-4 flex-1 md:container md:mx-0">{children}</div>
+            <div className="mx-4 flex-1 py-8 md:container md:mx-0 md:py-0">
+              {children}
+            </div>
             <SiteFooter />
             <TailwindIndicator />
           </ThemeProvider>
