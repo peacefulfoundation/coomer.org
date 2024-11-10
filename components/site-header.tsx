@@ -13,9 +13,12 @@ export function SiteHeader() {
         alt={siteConfig.title}
         className="block rounded-full md:hidden"
       />
-      <h1 className="hidden p-2 text-2xl font-bold md:block">
+      <a
+        href="/"
+        className="hidden p-2 text-2xl font-bold transition-colors duration-200 hover:text-foreground/80 md:block"
+      >
         {siteConfig.title}
-      </h1>
+      </a>
       <div className="flex space-x-2 font-semibold">
         {siteConfig.headerLinks.map((item, index) => (
           <Link

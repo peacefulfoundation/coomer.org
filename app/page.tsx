@@ -33,19 +33,27 @@ export default function Home() {
 
           <div className="flex gap-3">
             <a
-              href="https://mega.nz/folder/0okFWToQ#hRLo1ucmRxWwXXaiSh4NCw"
+              href="https://quiteasily.org"
               className="w-fit items-center rounded-full border-[1.5px] border-black px-4 py-1.5 font-semibold transition-colors duration-200 ease-in-out hover:bg-black hover:text-white"
             >
-              more memes
+              wanna psyop?
             </a>
             <a
               href="https://discord.com/invite/pFvDZms3AY"
-              className="w-fit items-center rounded-full px-4 py-1.5 font-semibold underline underline-offset-2 transition-colors duration-200 ease-in-out hover:bg-violet-700 hover:text-white hover:no-underline"
+              className="w-fit items-center rounded-full border-[1.5px] border-violet-700 bg-violet-700 px-4 py-1.5 font-semibold text-white transition-colors duration-200 ease-in-out hover:bg-white hover:text-violet-700"
             >
               join our discord
             </a>
           </div>
         </div>
+      </div>
+      <div className="pt-10">
+        <a
+          href="https://easypeasymethod.org"
+          className="w-fit items-center rounded-full border-[1.5px] border-black bg-black px-4 py-2.5 font-semibold text-white transition-colors duration-200 ease-in-out hover:bg-white hover:text-black"
+        >
+          wanna quit porn? easypeasymethod.org
+        </a>
       </div>
       <PostList />
     </main>
