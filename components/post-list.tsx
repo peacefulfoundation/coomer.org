@@ -75,7 +75,7 @@ export default function PostList() {
 
   return (
     <div className="mx-auto w-full max-w-screen-sm py-12">
-      <h1 className="mb-4 text-xl font-bold">more memes? more memes.</h1>
+      <h1 className="mb-4 text-xl font-bold">begin the scrooooooling!!!</h1>
       <div className="space-y-4">
         {posts.map((post) => (
           <Card key={post.id} className="overflow-hidden">
