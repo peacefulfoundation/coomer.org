@@ -1,16 +1,11 @@
 'use client';
 
 import { runtimeEnv } from '@/config/env';
-import { siteConfig } from '@/config/site';
-import { Share2Icon } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
-import { RWebShare } from 'react-web-share';
 
 import { useEffect, useState } from 'react';
 
-import Image from 'next/image';
-
-import { Button } from '@/components/ui/button';
+import { Post } from '@/components/post';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -78,42 +73,7 @@ export default function PostList() {
       <h1 className="mb-4 text-xl font-bold">begin the scrooooooling!!!</h1>
       <div className="space-y-4">
         {posts.map((post) => (
-          <Card key={post.id} className="overflow-hidden">
-            <CardContent className="p-0">
-              <div className="relative w-full">
-                <div className="relative aspect-auto w-full">
-                  <Image
-                    src={post.imageUrl}
-                    alt={post.id}
-                    width={0}
-                    height={0}
-                    sizes="(max-width: 768px) 100vw, 600px"
-                    className="h-auto w-full"
-                    priority={posts.indexOf(post) < 2}
-                  />
-                </div>
-              </div>
-              <div className="flex items-center justify-between px-4 py-2">
-                <p className="ml-1 text-left text-sm font-medium text-muted-foreground">
-                  {post.id}
-                </p>
-                <RWebShare
-                  data={{
-                    text: `check out this sick coomer meme (${post.id}): `,
-                    url: `${siteConfig.url}/${post.id}`,
-                  }}
-                >
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="rounded-full text-muted-foreground"
-                  >
-                    <Share2Icon />
-                  </Button>
-                </RWebShare>
-              </div>
-            </CardContent>
-          </Card>
+          <Post key={post.id} imageUrl={post.imageUrl} caption={post.id} />
         ))}
       </div>
       {loading && (

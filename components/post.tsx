@@ -1,7 +1,9 @@
 'use client';
 
 import { Share2Icon } from 'lucide-react';
-import { RWebShare } from 'react-web-share';
+import { toast } from 'sonner';
+
+import { useState } from 'react';
 
 import Image from 'next/image';
 
@@ -11,18 +13,48 @@ import { Card, CardContent } from '@/components/ui/card';
 export function Post({
   caption,
   imageUrl,
-  shareText,
-  shareUrl,
-  key,
 }: {
   caption: string;
   imageUrl: string;
-  shareText: string;
-  shareUrl: string;
-  key?: string;
 }) {
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    setIsDownloading(true);
+    try {
+      const filename = `${caption}.jpg`;
+      const response = await fetch(
+        `/api/download?imageUrl=${encodeURIComponent(imageUrl)}&filename=${encodeURIComponent(
+          filename
+        )}`
+      );
+
+      if (!response.ok) {
+        const errorMsg = await response.text();
+        throw new Error(errorMsg || 'Download failed');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast.success('Image downloaded');
+    } catch (error) {
+      console.error(error);
+      toast.error(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
-    <Card className="overflow-hidden" key={key}>
+    <Card className="overflow-hidden">
       <CardContent className="p-0">
         <div className="relative w-full">
           <div className="relative aspect-auto w-full">
@@ -42,20 +74,15 @@ export function Post({
             {caption}
           </p>
 
-          <RWebShare
-            data={{
-              text: shareText,
-              url: shareUrl,
-            }}
+          <Button
+            size="icon"
+            variant="ghost"
+            className="rounded-full text-muted-foreground"
+            onClick={handleDownload}
+            disabled={isDownloading}
           >
-            <Button
-              size="icon"
-              variant="ghost"
-              className="rounded-full text-muted-foreground"
-            >
-              <Share2Icon />
-            </Button>
-          </RWebShare>
+            <Share2Icon />
+          </Button>
         </div>
       </CardContent>
     </Card>
