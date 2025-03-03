@@ -1,10 +1,15 @@
+'use client';
+
 import { siteConfig } from '@/config/site';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import PostList from '@/components/post-list';
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <main className="flex min-h-[calc(100vh_-_theme(spacing.40))] w-full flex-col items-center justify-center space-y-4">
       <div className="grid grid-flow-row items-center gap-4 md:grid-flow-col">
@@ -47,13 +52,22 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="pt-10">
+      <div className="flex gap-2 pt-10">
         <a
           href="https://easypeasymethod.org"
           className="w-fit items-center rounded-full border-[1.5px] border-black bg-black px-4 py-2.5 font-semibold text-white transition-colors duration-200 ease-in-out hover:bg-white hover:text-black"
         >
           wanna quit porn? easypeasymethod.org
         </a>
+        <button
+          onClick={() => {
+            localStorage.removeItem('lastCursor');
+            router.refresh();
+          }}
+          className="w-fit items-center rounded-full border-[1.5px] border-black bg-black px-4 py-2.5 font-semibold text-white transition-colors duration-200 ease-in-out hover:bg-white hover:text-black"
+        >
+          start over
+        </button>
       </div>
       <PostList />
     </main>

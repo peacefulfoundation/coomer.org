@@ -29,6 +29,13 @@ export default function PostList() {
     threshold: 0.1,
   });
 
+  useEffect(() => {
+    const storedCursor = localStorage.getItem('lastCursor');
+    if (storedCursor) {
+      setCursor(storedCursor);
+    }
+  }, []);
+
   const fetchPosts = async () => {
     if (!hasMore || loading) return;
 
@@ -53,6 +60,9 @@ export default function PostList() {
 
       setPosts((prevPosts) => [...prevPosts, ...data.posts]);
       setCursor(data.cursor);
+      if (data.cursor) {
+        localStorage.setItem('lastCursor', data.cursor);
+      }
       setHasMore(!!data.cursor);
     } catch (err) {
       setError('An error occurred while fetching posts. Please try again.');
