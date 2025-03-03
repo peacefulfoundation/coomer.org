@@ -74,12 +74,7 @@ export default async function PostPage(props: Props) {
 
   return (
     <div className="mx-auto w-full max-w-screen-sm py-12">
-      <Post
-        caption={post.id}
-        imageUrl={post.imageUrl}
-        shareText={`check out this sick coomer meme: `}
-        shareUrl={`${siteConfig.url}/${params.id}`}
-      />
+      <Post caption={post.id} imageUrl={post.imageUrl} />
     </div>
   );
 }
