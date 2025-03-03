@@ -43,7 +43,7 @@ export default function PostList() {
     setError(null);
     try {
       const url = new URL(`${runtimeEnv.WORKER_URL}/`);
-      url.searchParams.append('limit', '6');
+      url.searchParams.append('limit', '3');
       if (cursor) {
         url.searchParams.append('cursor', cursor);
       }
