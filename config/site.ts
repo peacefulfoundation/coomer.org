@@ -16,10 +16,6 @@ export const siteConfig = {
   ],
   headerLinks: [
     {
-      title: 'not an nft',
-      href: '/not-an-nft',
-    },
-    {
       title: 'ethos',
       href: '/ethos',
     },
