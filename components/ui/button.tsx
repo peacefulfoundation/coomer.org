@@ -1,5 +1,6 @@
 import { Slot } from '@radix-ui/react-slot';
 import { type VariantProps, cva } from 'class-variance-authority';
+import { LockIcon } from 'lucide-react';
 
 import * as React from 'react';
 
@@ -10,20 +11,21 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+        default:
+          'w-fit items-center rounded-full border-[1.5px] border-black bg-black font-semibold text-white transition-colors duration-200 text-md ease-in-out hover:bg-white hover:text-black',
         destructive:
           'bg-destructive text-destructive-foreground hover:bg-destructive/90',
         outline:
           'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
         secondary:
-          'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+          'w-fit items-center text-md rounded-full border-[1.5px] border-black font-semibold transition-colors duration-200 ease-in-out hover:bg-black hover:text-white',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
       },
       size: {
-        default: 'h-10 px-4 py-2',
-        sm: 'h-9 rounded-md px-3',
-        lg: 'h-11 rounded-md px-8',
+        default: 'px-4 py-2.5',
+        sm: 'px-4 py-1.5',
+        lg: 'h-11 px-8',
         icon: 'h-10 w-10',
       },
     },
@@ -41,14 +43,22 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, disabled, ...props }, ref) => {
     const Comp = asChild ? Slot : 'button';
     return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
+      <div className="relative inline-flex">
+        <Comp
+          className={cn(buttonVariants({ variant, size, className }))}
+          ref={ref}
+          disabled={disabled}
+          {...props}
+        />
+        {disabled && (
+          <span className="absolute -right-1.5 -top-1.5 flex items-center justify-center rounded-full bg-background p-1 text-primary-foreground">
+            <LockIcon className="size-4 text-muted-foreground" />
+          </span>
+        )}
+      </div>
     );
   }
 );

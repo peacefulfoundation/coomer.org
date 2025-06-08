@@ -5,7 +5,10 @@ import { useInView } from 'react-intersection-observer';
 
 import { useEffect, useState } from 'react';
 
+import Link from 'next/link';
+
 import { Post } from '@/components/post';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -79,8 +82,19 @@ export default function PostList() {
   }, [inView, hasMore]);
 
   return (
-    <div className="mx-auto w-full max-w-screen-sm py-12">
-      <h1 className="mb-4 text-xl font-bold">begin the scrooooooling!!!</h1>
+    <div className="mx-auto w-full max-w-screen-sm space-y-6 py-12">
+      <h1 className="mb-4 text-2xl font-bold">begin the scrooooooling!!!</h1>
+      <div className="flex flex-grow space-x-3">
+        <Button variant="secondary" asChild>
+          <Link href="https://coomer.org">coomer</Link>
+        </Button>
+        <Button variant="secondary" asChild>
+          <Link href="https://coomer.org">more memes</Link>
+        </Button>
+        <Button variant="secondary" disabled>
+          webm or gif
+        </Button>
+      </div>
       <div className="space-y-4">
         {posts.map((post) => (
           <Post key={post.id} imageUrl={post.imageUrl} caption={post.id} />
