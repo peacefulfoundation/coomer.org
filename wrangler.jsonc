@@ -1,0 +1,61 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "coomer-org",
+	"compatibility_date": "2024-12-01",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"pages_build_output_dir": "dist",
+	// D1 Database binding
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "coomer-db",
+			"database_id": "c680fc4f-2d7a-46c6-9376-3774879a0c2a",
+		}
+	],
+	// KV Namespace for Astro sessions (required by @astrojs/cloudflare)
+	"kv_namespaces": [
+		{
+			"binding": "SESSION",
+			"id": "722daefb719d4ffe94f44427baf09024"
+		}
+	],
+	// Public environment variables (non-sensitive)
+	"vars": {
+		"SITE_URL": "https://www.coomer.org",
+		"WORKER_URL": "YOUR_WORKER_URL",
+		"CDN_URL": "YOUR_CDN_URL",
+		"DISCORD_GUILD_ID": "YOUR_DISCORD_GUILD_ID",
+		"DISCORD_KOFI_ROLE_ID": "YOUR_KOFI_ROLE_ID",
+		"DISCORD_APPROVAL_CHANNEL_ID": "YOUR_APPROVAL_CHANNEL_ID",
+		"KOFI_USERNAME": "coomerorg"
+	},
+	// Secrets (set via: pnpm wrangler secret put <NAME>)
+	// Authentication:
+	// - DISCORD_CLIENT_ID
+	// - DISCORD_CLIENT_SECRET
+	// - BETTER_AUTH_SECRET
+	// 
+	// Video (Mux):
+	// - MUX_TOKEN_ID
+	// - MUX_TOKEN_SECRET
+	// - MUX_SIGNING_KEY_ID
+	// - MUX_SIGNING_KEY_PRIVATE
+	//
+	// Discord Bot (for comment approval):
+	// - DISCORD_BOT_TOKEN
+	// - DISCORD_PUBLIC_KEY
+	//
+	// Ko-fi Webhook:
+	// - KOFI_VERIFICATION_TOKEN
+	// Local development configuration
+	"dev": {
+		"port": 4321
+	},
+	// Assets configuration for Astro SSR
+	"assets": {
+		"directory": "./dist",
+		"not_found_handling": "single-page-application"
+	}
+}

@@ -2,11 +2,7 @@ import type { Config } from 'tailwindcss';
 
 const config: Config = {
   darkMode: ['class'],
-  content: [
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
+  content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
   theme: {
     extend: {
       container: {
@@ -67,4 +63,5 @@ const config: Config = {
   },
   plugins: [require('@tailwindcss/typography'), require('tailwindcss-animate')],
 };
+
 export default config;
