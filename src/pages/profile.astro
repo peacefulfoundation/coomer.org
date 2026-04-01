@@ -1,0 +1,28 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { ProfileContent } from '@/components/ProfileContent';
+
+const user = Astro.locals.user;
+
+if (!user) {
+  return Astro.redirect('/');
+}
+---
+
+<Layout title="Profile">
+  <main class="flex min-h-[calc(100vh_-_theme(spacing.40))] w-full flex-col items-center justify-center py-12">
+    <ProfileContent 
+      client:load
+      user={{
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        image: user.image,
+        discordId: user.discordId,
+        discordUsername: user.discordUsername,
+        isKofiMember: user.isKofiMember,
+        lastRoleCheck: user.lastRoleCheck?.toISOString() || null,
+      }}
+    />
+  </main>
+</Layout>

@@ -1,0 +1,49 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { Post } from '@/components/Post';
+
+const { id } = Astro.params;
+const env = Astro.locals.runtime.env;
+
+interface PostData {
+  id: string;
+  imageUrl: string;
+}
+
+interface ApiResponse {
+  posts: PostData[];
+}
+
+let post: PostData | null = null;
+
+try {
+  const response = await fetch(`${env.WORKER_URL}/?id=${id}`);
+  if (response.ok) {
+    const data: ApiResponse = await response.json();
+    post = data.posts[0] || null;
+  }
+} catch (error) {
+  console.error('Error fetching post:', error);
+}
+
+if (!post) {
+  return Astro.redirect('/404');
+}
+---
+
+<Layout title={post.id}>
+  <main class="flex min-h-[calc(100vh_-_theme(spacing.40))] w-full flex-col items-center justify-center py-12">
+    <div class="w-full max-w-screen-sm">
+      <Post client:load imageUrl={post.imageUrl} caption={post.id} />
+      
+      <div class="mt-6 text-center">
+        <a
+          href="/"
+          class="inline-flex items-center justify-center rounded-full border-[1.5px] border-black px-6 py-2.5 font-semibold transition-colors duration-200 ease-in-out hover:bg-black hover:text-white"
+        >
+          ← Back to all memes
+        </a>
+      </div>
+    </div>
+  </main>
+</Layout>

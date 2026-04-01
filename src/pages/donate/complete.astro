@@ -1,0 +1,16 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { CompleteDonation } from '@/components/CompleteDonation';
+
+const user = Astro.locals.user;
+
+if (!user) {
+  return Astro.redirect('/?login=required');
+}
+---
+
+<Layout title="Complete Donation">
+  <main class="flex min-h-[calc(100vh_-_theme(spacing.40))] w-full flex-col items-center justify-center py-12 px-4">
+    <CompleteDonation client:load />
+  </main>
+</Layout>

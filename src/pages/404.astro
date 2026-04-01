@@ -1,0 +1,18 @@
+---
+import Layout from '@/layouts/Layout.astro';
+---
+
+<Layout title="Not Found">
+  <main class="flex min-h-[calc(100vh_-_theme(spacing.40))] w-full flex-col items-center justify-center">
+    <div class="text-center space-y-4">
+      <h1 class="text-6xl font-bold">404</h1>
+      <p class="text-xl text-muted-foreground">This meme doesn't exist (yet)</p>
+      <a
+        href="/"
+        class="inline-flex items-center justify-center rounded-full border-[1.5px] border-black bg-black px-6 py-2.5 font-semibold text-white transition-colors duration-200 ease-in-out hover:bg-white hover:text-black"
+      >
+        Go back home
+      </a>
+    </div>
+  </main>
+</Layout>
