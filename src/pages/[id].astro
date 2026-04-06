@@ -1,29 +1,33 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import { Post } from '@/components/Post';
+import Post from '@/components/Post.astro';
+import Button from '@/components/ui/button.astro';
+import { ArrowLeft } from '@lucide/astro';
 
 const { id } = Astro.params;
 const env = Astro.locals.runtime.env;
+const user = Astro.locals.user;
+const isLoggedIn = !!user;
+const kofiUsername = env.KOFI_USERNAME || 'coomerorg';
+
+if (!id) {
+  return Astro.redirect('/404');
+}
 
 interface PostData {
   id: string;
   imageUrl: string;
 }
 
-interface ApiResponse {
-  posts: PostData[];
-}
-
 let post: PostData | null = null;
 
 try {
-  const response = await fetch(`${env.WORKER_URL}/?id=${id}`);
+  const response = await fetch(`${env.WORKER_URL}/${id}`);
   if (response.ok) {
-    const data: ApiResponse = await response.json();
-    post = data.posts[0] || null;
+    post = await response.json();
   }
-} catch (error) {
-  console.error('Error fetching post:', error);
+} catch (e) {
+  console.error('Failed to fetch post:', e);
 }
 
 if (!post) {
@@ -32,18 +36,19 @@ if (!post) {
 ---
 
 <Layout title={post.id}>
-  <main class="flex min-h-[calc(100vh_-_theme(spacing.40))] w-full flex-col items-center justify-center py-12">
-    <div class="w-full max-w-screen-sm">
-      <Post client:load imageUrl={post.imageUrl} caption={post.id} />
-      
-      <div class="mt-6 text-center">
-        <a
-          href="/"
-          class="inline-flex items-center justify-center rounded-full border-[1.5px] border-black px-6 py-2.5 font-semibold transition-colors duration-200 ease-in-out hover:bg-black hover:text-white"
-        >
-          ← Back to all memes
-        </a>
-      </div>
+  <div class="mx-auto w-full max-w-screen-sm py-12">
+    <Post
+      id={post.id}
+      imageUrl={post.imageUrl}
+      isLoggedIn={isLoggedIn}
+      kofiUsername={kofiUsername}
+    />
+    
+    <div class="mt-6">
+      <Button variant="secondary" href="/">
+        <ArrowLeft class="mr-2 h-4 w-4" />
+        Back to memes
+      </Button>
     </div>
-  </main>
+  </div>
 </Layout>

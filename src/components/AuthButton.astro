@@ -1,0 +1,34 @@
+---
+import Button from '@/components/ui/button.astro';
+import Avatar from '@/components/ui/avatar.astro';
+import { LogIn, LogOut, User } from '@lucide/astro';
+import type { User as UserType } from '@/lib/db.types';
+
+interface Props {
+  user: UserType | null;
+}
+
+const { user } = Astro.props;
+const isLoggedIn = !!user;
+---
+
+{isLoggedIn ? (
+  <div class="flex items-center space-x-3">
+    <a href="/profile" class="flex items-center space-x-2 hover:opacity-80">
+      <Avatar src={user.image} alt={user.name} class="h-8 w-8" />
+      <span class="hidden text-sm font-medium md:inline">
+        {user.discord_username || user.name}
+      </span>
+    </a>
+    <form action="/api/auth/signout" method="POST">
+      <Button variant="ghost" size="icon" class="h-8 w-8" type="submit">
+        <LogOut class="h-4 w-4" />
+      </Button>
+    </form>
+  </div>
+) : (
+  <Button variant="secondary" size="sm" href="/api/auth/signin/discord">
+    <LogIn class="mr-2 h-4 w-4" />
+    Login with Discord
+  </Button>
+)}

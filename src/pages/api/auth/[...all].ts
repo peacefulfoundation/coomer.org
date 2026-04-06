@@ -4,7 +4,6 @@ import { createAuth } from '@/lib/auth';
 export const ALL: APIRoute = async (context) => {
   const env = context.locals.runtime.env;
   const auth = createAuth(env);
-  
   return auth.handler(context.request);
 };
 

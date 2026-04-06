@@ -1,12 +1,16 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import { ContentTabs } from '@/components/ContentTabs';
-import { Card, CardContent, CardHeader, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import ContentTabs from '@/components/ContentTabs.astro';
+import Card from '@/components/ui/card.astro';
+import CardContent from '@/components/ui/card-content.astro';
+import CardHeader from '@/components/ui/card-header.astro';
+import CardFooter from '@/components/ui/card-footer.astro';
+import Button from '@/components/ui/button.astro';
+import { ExternalLink } from '@lucide/astro';
 
 const user = Astro.locals.user;
 const isLoggedIn = !!user;
-const isKofiMember = user?.isKofiMember ?? false;
+const isKofiMember = user?.is_kofi_member === 1;
 
 const env = Astro.locals.runtime.env;
 const workerUrl = env.WORKER_URL;
@@ -14,43 +18,27 @@ const kofiUsername = env.KOFI_USERNAME || 'coomerorg';
 ---
 
 <Layout title="Home">
-  <main class="flex min-h-[calc(100vh_-_theme(spacing.40))] w-full flex-col items-center justify-center space-y-4">
-    <div class="mt-10 flex w-full max-w-screen-sm flex-col items-center justify-center">
-      <Card className="flex w-full flex-col space-y-5 rounded-2xl border-none bg-[#c9fd8b] p-6">
-        <CardHeader className="flex flex-row items-center justify-between space-y-2 p-0">
-          <h1 class="text-3xl font-bold text-black">not an nft!</h1>
-          <a
-            href="https://web3isgoinggreat.com"
-            class="inline-flex w-fit items-center rounded-full border-[1.5px] border-black bg-white px-4 py-2.5 font-semibold text-black transition-colors duration-200 ease-in-out hover:bg-black hover:text-white"
-          >
-            learn more about crypto!!!!!
-          </a>
-        </CardHeader>
-        <CardContent className="p-0">
-          <ul class="list-inside list-disc text-black">
-            <li>crypto and web3 is a scam, do not trust anyone involved.</li>
-            <li>the act of sacrificing people and the planet for money.</li>
-          </ul>
-        </CardContent>
-        <CardFooter className="flex items-center justify-end p-0">
-          <a
-            href="https://youtu.be/YQ_xWvX1n9g"
-            class="font-semibold text-black underline-offset-4 hover:underline"
-          >
-            click to learn about euthanising grifters and being kind online 😊 →
-          </a>
-        </CardFooter>
-      </Card>
-    </div>
-    
-    <div class="mx-auto w-full max-w-screen-sm py-12">
-      <ContentTabs 
-        client:load 
-        isLoggedIn={isLoggedIn}
-        isKofiMember={isKofiMember}
-        workerUrl={workerUrl}
-        kofiUsername={kofiUsername}
-      />
-    </div>
-  </main>
+  <Card class="mb-8 overflow-hidden md:hidden">
+    <CardHeader class="bg-lime rounded-t-lg p-4 text-black">
+      <h2 class="font-bold">coomer.org</h2>
+    </CardHeader>
+    <CardContent class="p-4">
+      <p class="text-sm">curated coomer memes</p>
+    </CardContent>
+    <CardFooter class="flex items-center justify-center pb-4">
+      <Button variant="secondary" href="/not-an-nft">
+        <ExternalLink class="mr-2 h-4 w-4" />
+        not an NFT
+      </Button>
+    </CardFooter>
+  </Card>
+  
+  <div class="mx-auto w-full max-w-screen-sm py-8 md:py-12">
+    <ContentTabs
+      isLoggedIn={isLoggedIn}
+      isKofiMember={isKofiMember}
+      workerUrl={workerUrl}
+      kofiUsername={kofiUsername}
+    />
+  </div>
 </Layout>

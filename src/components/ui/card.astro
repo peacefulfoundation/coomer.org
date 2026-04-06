@@ -1,0 +1,16 @@
+---
+import { cn } from '@/lib/utils';
+
+interface Props extends astroHTML.JSX.HTMLAttributes {
+  as?: 'div' | 'article' | 'section';
+}
+
+const { as: Component = 'div', class: className, ...props } = Astro.props;
+---
+
+<Component
+  class={cn('rounded-lg border bg-card text-card-foreground shadow-sm', className)}
+  {...props}
+>
+  <slot />
+</Component>

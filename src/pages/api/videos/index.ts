@@ -1,18 +1,14 @@
 import type { APIRoute } from 'astro';
-import { eq } from 'drizzle-orm';
-import { createDb } from '@/db';
-import * as schema from '@/db/schema';
 import { createAuth } from '@/lib/auth';
-import { createMuxClient, listVideoAssets, getSignedPlaybackUrl } from '@/lib/mux';
+import { createDb } from '@/lib/db';
+import { createMuxClient, listVideoAssets, getSignedPlaybackUrl } from '@/lib/services/mux';
 
 export const GET: APIRoute = async (context) => {
   const env = context.locals.runtime.env;
   const auth = createAuth(env);
   const db = createDb(env.DB);
 
-  const session = await auth.api.getSession({
-    headers: context.request.headers,
-  });
+  const session = await auth.api.getSession({ headers: context.request.headers });
 
   if (!session?.user) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
@@ -21,18 +17,17 @@ export const GET: APIRoute = async (context) => {
     });
   }
 
-  const user = await db.query.user.findFirst({
-    where: eq(schema.user.id, session.user.id),
-  });
+  const user = await db
+    .selectFrom('user')
+    .select(['is_kofi_member'])
+    .where('id', '=', session.user.id)
+    .executeTakeFirst();
 
-  if (!user?.isKofiMember) {
-    return new Response(
-      JSON.stringify({ error: 'Ko-fi membership required' }),
-      {
-        status: 403,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+  if (!user?.is_kofi_member) {
+    return new Response(JSON.stringify({ error: 'Ko-fi membership required' }), {
+      status: 403,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
   const url = new URL(context.request.url);
@@ -54,16 +49,13 @@ export const GET: APIRoute = async (context) => {
       }))
     );
 
-    return new Response(
-      JSON.stringify({
-        videos: videosWithSignedUrls,
-        cursor: nextCursor,
-      }),
-      {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    return new Response(JSON.stringify({
+      videos: videosWithSignedUrls,
+      cursor: nextCursor,
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
   } catch (error) {
     console.error('Error fetching videos:', error);
     return new Response(JSON.stringify({ error: 'Failed to fetch videos' }), {

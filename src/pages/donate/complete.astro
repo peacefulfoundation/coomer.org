@@ -1,6 +1,10 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import { CompleteDonation } from '@/components/CompleteDonation';
+import Card from '@/components/ui/card.astro';
+import CardContent from '@/components/ui/card-content.astro';
+import CardHeader from '@/components/ui/card-header.astro';
+import Button from '@/components/ui/button.astro';
+import { Heart, Send, Loader2 } from '@lucide/astro';
 
 const user = Astro.locals.user;
 
@@ -10,7 +14,152 @@ if (!user) {
 ---
 
 <Layout title="Complete Donation">
-  <main class="flex min-h-[calc(100vh_-_theme(spacing.40))] w-full flex-col items-center justify-center py-12 px-4">
-    <CompleteDonation client:load />
-  </main>
+  <div class="mx-auto max-w-lg py-12">
+    <Card>
+      <CardHeader>
+        <div class="flex items-center gap-2">
+          <Heart class="h-5 w-5 text-pink-500" />
+          <h1 class="text-xl font-bold">Leave Your Comment</h1>
+        </div>
+        <p class="text-sm text-muted-foreground">
+          Thank you for your donation! You can now leave a comment on the post.
+        </p>
+      </CardHeader>
+      
+      <CardContent class="space-y-4">
+        <div id="loading" class="py-8 text-center">
+          <Loader2 class="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
+          <p class="mt-2 text-sm text-muted-foreground">Loading pending donations...</p>
+        </div>
+        
+        <div id="donations-container" class="hidden space-y-6"></div>
+        
+        <p id="no-donations" class="hidden py-8 text-center text-muted-foreground">
+          No pending donations found. Make a donation first!
+        </p>
+        
+        <p id="error-message" class="hidden text-center text-red-500"></p>
+      </CardContent>
+    </Card>
+  </div>
 </Layout>
+
+<script>
+  document.addEventListener('astro:page-load', async () => {
+    const loading = document.getElementById('loading');
+    const container = document.getElementById('donations-container');
+    const noDonations = document.getElementById('no-donations');
+    const errorMessage = document.getElementById('error-message');
+
+    try {
+      const response = await fetch('/api/donate/pending', { credentials: 'include' });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch pending donations');
+      }
+
+      const data = await response.json();
+      loading?.classList.add('hidden');
+
+      if (!data.donations || data.donations.length === 0) {
+        noDonations?.classList.remove('hidden');
+        return;
+      }
+
+      container?.classList.remove('hidden');
+      
+      data.donations.forEach((donation: { id: string; postId: string; amount: number; createdAt: string }) => {
+        const card = document.createElement('div');
+        card.className = 'rounded-lg border p-4 space-y-4';
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="font-medium">Post: ${donation.postId}</p>
+              <p class="text-xs text-muted-foreground">
+                Donated on ${new Date(donation.createdAt).toLocaleDateString()}
+              </p>
+            </div>
+            <span class="text-lg font-bold text-pink-500">$${donation.amount}</span>
+          </div>
+          <div>
+            <label class="text-sm font-medium mb-2 block">Your Comment</label>
+            <textarea
+              id="comment-${donation.id}"
+              class="w-full min-h-[100px] p-3 rounded-lg border border-input bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+              placeholder="Leave a nice comment..."
+              maxLength="500"
+            ></textarea>
+            <div class="text-xs text-muted-foreground text-right mt-1">
+              <span id="count-${donation.id}">0</span>/500
+            </div>
+          </div>
+          <button
+            id="submit-${donation.id}"
+            class="w-full inline-flex items-center justify-center rounded-full border-[1.5px] border-black bg-black px-4 py-2.5 font-semibold text-white transition-colors hover:bg-white hover:text-black disabled:opacity-50"
+          >
+            Submit Comment
+          </button>
+          <p id="msg-${donation.id}" class="text-sm text-center hidden"></p>
+        `;
+        container?.appendChild(card);
+
+        const textarea = document.getElementById(`comment-${donation.id}`) as HTMLTextAreaElement;
+        const counter = document.getElementById(`count-${donation.id}`);
+        const submitBtn = document.getElementById(`submit-${donation.id}`);
+        const msg = document.getElementById(`msg-${donation.id}`);
+
+        textarea?.addEventListener('input', () => {
+          if (counter) counter.textContent = String(textarea.value.length);
+        });
+
+        submitBtn?.addEventListener('click', async () => {
+          const content = textarea?.value.trim();
+          if (!content) return;
+
+          submitBtn.setAttribute('disabled', 'true');
+          submitBtn.textContent = 'Submitting...';
+
+          try {
+            const res = await fetch('/api/comments/submit', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({ donationId: donation.id, content }),
+            });
+
+            const result = await res.json();
+            
+            if (msg) {
+              msg.textContent = result.message || result.error;
+              msg.classList.remove('hidden');
+              msg.classList.toggle('text-green-600', res.ok);
+              msg.classList.toggle('text-red-500', !res.ok);
+            }
+
+            if (res.ok) {
+              textarea.setAttribute('disabled', 'true');
+              submitBtn.textContent = 'Submitted!';
+            } else {
+              submitBtn.removeAttribute('disabled');
+              submitBtn.textContent = 'Submit Comment';
+            }
+          } catch (e) {
+            if (msg) {
+              msg.textContent = 'An error occurred';
+              msg.classList.remove('hidden');
+              msg.classList.add('text-red-500');
+            }
+            submitBtn.removeAttribute('disabled');
+            submitBtn.textContent = 'Submit Comment';
+          }
+        });
+      });
+    } catch (e) {
+      loading?.classList.add('hidden');
+      if (errorMessage) {
+        errorMessage.textContent = 'Failed to load donations';
+        errorMessage.classList.remove('hidden');
+      }
+    }
+  });
+</script>

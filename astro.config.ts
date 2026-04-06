@@ -1,7 +1,5 @@
 import cloudflare from '@astrojs/cloudflare';
-import mdx from '@astrojs/mdx';
-import react from '@astrojs/react';
-import tailwind from '@astrojs/tailwind';
+import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
@@ -12,16 +10,7 @@ export default defineConfig({
       enabled: true,
     },
   }),
-  integrations: [
-    react(),
-    tailwind({
-      applyBaseStyles: false,
-    }),
-    mdx(),
-  ],
   vite: {
-    ssr: {
-      external: ['node:async_hooks'],
-    },
+    plugins: [tailwindcss()],
   },
 });

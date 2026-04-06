@@ -1,12 +1,11 @@
-// Donation visibility duration based on amount (in days)
-// Higher donations = longer visibility
+// Visibility duration based on donation amount (in days)
 export function calculateVisibilityDays(amount: number): number {
-  if (amount >= 50) return 365; // 1 year
-  if (amount >= 25) return 180; // 6 months
-  if (amount >= 10) return 90;  // 3 months
-  if (amount >= 5) return 30;   // 1 month
-  if (amount >= 3) return 14;   // 2 weeks
-  return 7; // 1 week minimum
+  if (amount >= 50) return 365;
+  if (amount >= 25) return 180;
+  if (amount >= 10) return 90;
+  if (amount >= 5) return 30;
+  if (amount >= 3) return 14;
+  return 7;
 }
 
 export function calculateVisibleUntil(amount: number): Date {
@@ -16,14 +15,12 @@ export function calculateVisibleUntil(amount: number): Date {
   return visibleUntil;
 }
 
-// Check if a comment is still visible based on donation amount and time
 export function isCommentVisible(visibleUntil: Date): boolean {
   return new Date() < visibleUntil;
 }
 
-// Calculate opacity for fading effect (comments fade as they approach expiry)
 export function calculateCommentOpacity(visibleUntil: Date, createdAt: Date): number {
-  const now = new Date().getTime();
+  const now = Date.now();
   const created = createdAt.getTime();
   const expires = visibleUntil.getTime();
   
@@ -33,16 +30,14 @@ export function calculateCommentOpacity(visibleUntil: Date, createdAt: Date): nu
   
   if (remaining <= 0) return 0;
   
-  // Start fading when 75% of time has passed
   const fadeThreshold = totalDuration * 0.75;
   if (elapsed < fadeThreshold) return 1;
   
-  // Linear fade from 1 to 0.3 in the last 25% of time
   const fadeProgress = (elapsed - fadeThreshold) / (totalDuration - fadeThreshold);
   return Math.max(0.3, 1 - (fadeProgress * 0.7));
 }
 
-// Ko-fi webhook payload interface
+// Ko-fi webhook
 export interface KofiWebhookPayload {
   verification_token: string;
   message_id: string;
@@ -67,7 +62,6 @@ export function parseKofiWebhook(data: string): KofiWebhookPayload {
   return JSON.parse(data) as KofiWebhookPayload;
 }
 
-// Intent expiry time (30 minutes)
 export const INTENT_EXPIRY_MS = 30 * 60 * 1000;
 
 export function createIntentExpiresAt(): Date {

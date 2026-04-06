@@ -1,28 +1,146 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import { ProfileContent } from '@/components/ProfileContent';
+import Card from '@/components/ui/card.astro';
+import CardContent from '@/components/ui/card-content.astro';
+import CardHeader from '@/components/ui/card-header.astro';
+import Button from '@/components/ui/button.astro';
+import Avatar from '@/components/ui/avatar.astro';
+import { CheckCircle, XCircle, RefreshCw } from '@lucide/astro';
 
 const user = Astro.locals.user;
 
 if (!user) {
   return Astro.redirect('/');
 }
+
+const isKofiMember = user.is_kofi_member === 1;
+const lastCheck = user.last_role_check ? new Date(user.last_role_check) : null;
+
+function formatLastCheck(timestamp: number | null): string {
+  if (!timestamp) return 'Never';
+  const date = new Date(timestamp);
+  const now = Date.now();
+  const diff = now - date.getTime();
+  
+  if (diff < 60000) return 'Just now';
+  if (diff < 3600000) return `${Math.floor(diff / 60000)} minutes ago`;
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)} hours ago`;
+  return date.toLocaleDateString();
+}
 ---
 
 <Layout title="Profile">
-  <main class="flex min-h-[calc(100vh_-_theme(spacing.40))] w-full flex-col items-center justify-center py-12">
-    <ProfileContent 
-      client:load
-      user={{
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        image: user.image,
-        discordId: user.discordId,
-        discordUsername: user.discordUsername,
-        isKofiMember: user.isKofiMember,
-        lastRoleCheck: user.lastRoleCheck?.toISOString() || null,
-      }}
-    />
-  </main>
+  <div class="mx-auto max-w-md py-12">
+    <Card>
+      <CardHeader>
+        <div class="flex items-center space-x-4">
+          <Avatar src={user.image} alt={user.name} class="h-16 w-16" />
+          <div>
+            <h1 class="text-xl font-bold">{user.discord_username || user.name}</h1>
+            <p class="text-sm text-muted-foreground">{user.email}</p>
+          </div>
+        </div>
+      </CardHeader>
+      
+      <CardContent class="space-y-6">
+        <div class="space-y-4">
+          <h2 class="text-lg font-semibold">Subscription Status</h2>
+          
+          <div class="rounded-lg bg-muted p-4">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium">Ko-fi Membership</span>
+              {isKofiMember ? (
+                <span class="flex items-center gap-1 text-sm font-semibold text-green-600">
+                  <CheckCircle class="h-4 w-4" />
+                  Active
+                </span>
+              ) : (
+                <span class="flex items-center gap-1 text-sm font-semibold text-muted-foreground">
+                  <XCircle class="h-4 w-4" />
+                  Inactive
+                </span>
+              )}
+            </div>
+            <p class="mt-2 text-xs text-muted-foreground">
+              Last checked: {formatLastCheck(user.last_role_check)}
+            </p>
+          </div>
+          
+          <form action="/api/subscription/refresh" method="POST" id="refresh-form">
+            <Button variant="secondary" type="submit" class="w-full" id="refresh-btn">
+              <RefreshCw class="mr-2 h-4 w-4" id="refresh-icon" />
+              Refresh Status
+            </Button>
+          </form>
+          
+          <p id="refresh-message" class="hidden text-center text-sm"></p>
+        </div>
+        
+        <hr />
+        
+        <div class="space-y-2">
+          <h2 class="text-lg font-semibold">Account Details</h2>
+          <div class="grid gap-2 text-sm">
+            <div class="flex justify-between">
+              <span class="text-muted-foreground">Discord ID</span>
+              <span class="font-mono">{user.discord_id || 'Not linked'}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-muted-foreground">Member since</span>
+              <span>{new Date(user.created_at).toLocaleDateString()}</span>
+            </div>
+          </div>
+        </div>
+        
+        <form action="/api/auth/signout" method="POST">
+          <Button variant="outline" type="submit" class="w-full">
+            Sign Out
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  </div>
 </Layout>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const form = document.getElementById('refresh-form');
+    const btn = document.getElementById('refresh-btn');
+    const icon = document.getElementById('refresh-icon');
+    const message = document.getElementById('refresh-message');
+
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!btn || !icon || !message) return;
+
+      btn.setAttribute('disabled', 'true');
+      icon.classList.add('animate-spin');
+      message.classList.add('hidden');
+
+      try {
+        const response = await fetch('/api/subscription/refresh', {
+          method: 'POST',
+          credentials: 'include',
+        });
+
+        const data = await response.json();
+        
+        message.textContent = data.message || data.error;
+        message.classList.remove('hidden');
+        message.classList.toggle('text-green-600', response.ok);
+        message.classList.toggle('text-red-500', !response.ok);
+
+        if (response.ok) {
+          setTimeout(() => window.location.reload(), 1500);
+        }
+      } catch (e) {
+        message.textContent = 'An error occurred';
+        message.classList.remove('hidden');
+        message.classList.add('text-red-500');
+      } finally {
+        btn.removeAttribute('disabled');
+        icon.classList.remove('animate-spin');
+      }
+    });
+  });
+</script>

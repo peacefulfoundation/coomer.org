@@ -1,23 +1,16 @@
 import { betterAuth } from 'better-auth';
-import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { createDb } from '@/db';
-import * as schema from '@/db/schema';
+import { kyselyAdapter } from '@better-auth/kysely-adapter';
+import { createDb } from './db';
+import type { User, Session } from './db.types';
 
-export type User = typeof schema.user.$inferSelect;
-export type Session = typeof schema.session.$inferSelect;
+export type { User, Session };
 
-export function createAuth(env: CloudflareEnv) {
+export function createAuth(env: Env) {
   const db = createDb(env.DB);
 
   return betterAuth({
-    database: drizzleAdapter(db, {
-      provider: 'sqlite',
-      schema: {
-        user: schema.user,
-        session: schema.session,
-        account: schema.account,
-        verification: schema.verification,
-      },
+    database: kyselyAdapter(db, {
+      type: 'sqlite',
     }),
     baseURL: env.SITE_URL,
     basePath: '/api/auth',
@@ -35,32 +28,16 @@ export function createAuth(env: CloudflareEnv) {
     },
     user: {
       additionalFields: {
-        discordId: {
-          type: 'string',
-          required: false,
-        },
-        discordUsername: {
-          type: 'string',
-          required: false,
-        },
-        isKofiMember: {
-          type: 'boolean',
-          required: false,
-          defaultValue: false,
-        },
-        lastRoleCheck: {
-          type: 'date',
-          required: false,
-        },
+        discordId: { type: 'string', required: false },
+        discordUsername: { type: 'string', required: false },
+        isKofiMember: { type: 'boolean', required: false, defaultValue: false },
+        lastRoleCheck: { type: 'date', required: false },
       },
     },
     session: {
-      expiresIn: 60 * 60 * 24 * 7, // 7 days
-      updateAge: 60 * 60 * 24, // 1 day
-      cookieCache: {
-        enabled: true,
-        maxAge: 60 * 5, // 5 minutes
-      },
+      expiresIn: 60 * 60 * 24 * 7,
+      updateAge: 60 * 60 * 24,
+      cookieCache: { enabled: true, maxAge: 60 * 5 },
     },
     advanced: {
       generateId: () => crypto.randomUUID(),

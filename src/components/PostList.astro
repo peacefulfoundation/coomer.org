@@ -1,0 +1,150 @@
+---
+import Post from '@/components/Post.astro';
+import Card from '@/components/ui/card.astro';
+import CardContent from '@/components/ui/card-content.astro';
+import Skeleton from '@/components/ui/skeleton.astro';
+
+interface Props {
+  workerUrl: string;
+  isLoggedIn?: boolean;
+  kofiUsername?: string;
+}
+
+const { workerUrl, isLoggedIn = false, kofiUsername = 'coomerorg' } = Astro.props;
+
+interface PostData {
+  id: string;
+  imageUrl: string;
+}
+
+let initialPosts: PostData[] = [];
+let initialCursor: string | null = null;
+
+try {
+  const url = new URL(`${workerUrl}/`);
+  url.searchParams.append('limit', '3');
+  const response = await fetch(url.toString());
+  if (response.ok) {
+    const data = await response.json();
+    initialPosts = data.posts || [];
+    initialCursor = data.cursor || null;
+  }
+} catch (e) {
+  console.error('Failed to fetch initial posts:', e);
+}
+---
+
+<div class="space-y-4" id="post-list" data-worker-url={workerUrl} data-cursor={initialCursor || ''} data-logged-in={isLoggedIn} data-kofi={kofiUsername}>
+  <div id="posts-container" class="space-y-4">
+    {initialPosts.map((post) => (
+      <Post id={post.id} imageUrl={post.imageUrl} isLoggedIn={isLoggedIn} kofiUsername={kofiUsername} />
+    ))}
+  </div>
+  
+  <div id="loading-indicator" class="hidden space-y-4">
+    {[1, 2, 3].map(() => (
+      <Card>
+        <CardContent class="p-0">
+          <Skeleton class="h-72 w-full" />
+          <div class="flex justify-center">
+            <Skeleton class="my-4 h-4 w-2/3" />
+          </div>
+        </CardContent>
+      </Card>
+    ))}
+  </div>
+  
+  <p id="error-message" class="hidden text-red-500"></p>
+  <div id="load-trigger" class="h-10"></div>
+  <p id="end-message" class="hidden text-center text-muted-foreground">
+    You've reached the end. The edging is complete!
+  </p>
+</div>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const container = document.getElementById('post-list');
+    if (!container) return;
+
+    const postsContainer = document.getElementById('posts-container');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const errorMessage = document.getElementById('error-message');
+    const loadTrigger = document.getElementById('load-trigger');
+    const endMessage = document.getElementById('end-message');
+
+    const workerUrl = container.dataset.workerUrl;
+    const isLoggedIn = container.dataset.loggedIn === 'true';
+    const kofiUsername = container.dataset.kofi;
+    let cursor = container.dataset.cursor || null;
+    let loading = false;
+    let hasMore = !!cursor;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (loadTrigger && hasMore) observer.observe(loadTrigger);
+
+    async function loadMore() {
+      if (!hasMore || loading) return;
+      loading = true;
+      loadingIndicator?.classList.remove('hidden');
+      errorMessage?.classList.add('hidden');
+
+      try {
+        const url = new URL(`${workerUrl}/`);
+        url.searchParams.append('limit', '3');
+        if (cursor) url.searchParams.append('cursor', cursor);
+
+        const response = await fetch(url.toString());
+        if (!response.ok) {
+          if (response.status === 404) {
+            hasMore = false;
+            return;
+          }
+          throw new Error('Failed to fetch');
+        }
+
+        const data = await response.json();
+        cursor = data.cursor;
+        hasMore = !!cursor;
+
+        data.posts.forEach((post: { id: string; imageUrl: string }) => {
+          const article = document.createElement('article');
+          article.innerHTML = `
+            <div class="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden">
+              <div class="p-0">
+                <div class="relative w-full">
+                  <img src="${post.imageUrl}" alt="${post.id}" class="h-auto w-full" loading="lazy" />
+                </div>
+                <div class="flex items-center justify-between px-4 py-2">
+                  <p class="ml-1 text-left text-sm font-medium text-muted-foreground">${post.id}</p>
+                </div>
+              </div>
+            </div>
+          `;
+          postsContainer?.appendChild(article);
+        });
+
+        if (!hasMore) {
+          loadTrigger?.classList.add('hidden');
+          endMessage?.classList.remove('hidden');
+          observer.disconnect();
+        }
+      } catch (e) {
+        if (errorMessage) {
+          errorMessage.textContent = 'Failed to load more posts';
+          errorMessage.classList.remove('hidden');
+        }
+      } finally {
+        loading = false;
+        loadingIndicator?.classList.add('hidden');
+      }
+    }
+  });
+</script>

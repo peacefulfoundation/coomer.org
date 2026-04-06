@@ -1,0 +1,37 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Button from '@/components/ui/button.astro';
+import { ArrowLeft } from '@lucide/astro';
+---
+
+<Layout title="Not an NFT">
+  <article class="prose prose-neutral mx-auto max-w-screen-sm py-12 dark:prose-invert">
+    <h1>This is NOT an NFT</h1>
+    
+    <p>
+      Let's be clear: <strong>nothing on this website is an NFT</strong>, nor will it ever be.
+    </p>
+    
+    <h2>Why Not?</h2>
+    
+    <ul>
+      <li>Memes are meant to be shared freely, not commodified.</li>
+      <li>The environmental impact of most blockchain technologies is concerning.</li>
+      <li>We believe in the original spirit of internet culture: open, free, and accessible.</li>
+    </ul>
+    
+    <h2>But I Want to Support You!</h2>
+    
+    <p>
+      If you want to support us, consider joining our <a href="https://ko-fi.com/coomerorg">Ko-fi</a>.
+      You'll get access to exclusive video memes and help keep the lights on.
+    </p>
+    
+    <div class="not-prose mt-8">
+      <Button variant="secondary" href="/">
+        <ArrowLeft class="mr-2 h-4 w-4" />
+        Back to memes
+      </Button>
+    </div>
+  </article>
+</Layout>
