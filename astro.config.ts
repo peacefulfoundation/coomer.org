@@ -6,9 +6,6 @@ export default defineConfig({
   output: 'server',
   adapter: cloudflare({
     imageService: 'passthrough',
-    platformProxy: {
-      enabled: true,
-    },
   }),
   vite: {
     plugins: [tailwindcss()],

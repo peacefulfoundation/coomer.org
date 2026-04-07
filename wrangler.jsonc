@@ -10,7 +10,14 @@
     {
       "binding": "DB",
       "database_name": "coomer-db",
-      "database_id": "YOUR_DATABASE_ID"
+      "database_id": "c680fc4f-2d7a-46c6-9376-3774879a0c2a"
+    }
+  ],
+
+  "r2_buckets": [
+    {
+      "binding": "IMAGES_BUCKET",
+      "bucket_name": "coomer"
     }
   ],
 
@@ -18,18 +25,17 @@
   "kv_namespaces": [
     {
       "binding": "SESSION",
-      "id": "YOUR_KV_NAMESPACE_ID"
+      "id": "b73014cc5992456d88d8ba88a8a6123a"
     }
   ],
 
   // Public environment variables
   "vars": {
     "SITE_URL": "https://www.coomer.org",
-    "WORKER_URL": "https://coomflare.fraserpatterson.workers.dev",
     "DISCORD_GUILD_ID": "YOUR_DISCORD_GUILD_ID",
     "DISCORD_KOFI_ROLE_ID": "YOUR_KOFI_ROLE_ID",
     "DISCORD_APPROVAL_CHANNEL_ID": "YOUR_APPROVAL_CHANNEL_ID",
-    "KOFI_USERNAME": "coomerorg"
+    "KOFI_USERNAME": "peacefulfoundation"
   },
 
   // Secrets (set via: pnpm wrangler secret put <NAME>)

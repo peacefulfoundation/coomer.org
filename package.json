@@ -4,25 +4,25 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
+    "dev": "pnpm cf-typegen && astro dev",
+    "build": "pnpm cf-typegen && astro build",
+    "preview": "pnpm cf-typegen && astro preview",
     "astro": "astro",
-    "cf-typegen": "wrangler types",
+    "cf-typegen": "pnpm wrangler types src/cloudflare-env.d.ts --env-interface CloudflareEnv",
     "db:migrate:local": "wrangler d1 migrations apply coomer-db --local",
     "db:migrate:remote": "wrangler d1 migrations apply coomer-db --remote"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^12.0.0",
-    "@mux/mux-node": "^9.0.0",
-    "astro": "^5.0.0",
+    "@astrojs/cloudflare": "^12.6.13",
     "@better-auth/kysely-adapter": "^1.5.0",
+    "@lucide/astro": "latest",
+    "@mux/mux-node": "^9.0.0",
+    "astro": "^5.18.1",
     "better-auth": "^1.5.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "kysely": "^0.28.5",
     "kysely-d1": "^0.3.0",
-    "@lucide/astro": "latest",
     "tailwind-merge": "^2.5.4",
     "tailwind-variants": "^0.3.0"
   },
@@ -33,7 +33,7 @@
     "prettier-plugin-astro": "^0.14.0",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.7.0",
-    "wrangler": "^3.90.0"
+    "wrangler": "^4.80.0"
   },
   "packageManager": "pnpm@10.29.3"
 }
