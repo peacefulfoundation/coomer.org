@@ -27,8 +27,27 @@ const isLoggedIn = !!user;
     </form>
   </div>
 ) : (
-  <Button variant="secondary" size="sm" href="/api/auth/signin/discord">
+  <Button id="discord-login" variant="secondary" size="sm">
     <LogIn class="mr-2 h-4 w-4" />
     Login with Discord
   </Button>
 )}
+
+<script>
+          document
+            .getElementById('discord-login')
+            ?.addEventListener('click', async () => {
+              const res = await fetch('/api/auth/sign-in/social', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  provider: 'discord',
+                  callbackURL: '/profile',
+                }),
+              });
+              const data = (await res.json()) as { url?: string };
+              if (data.url) {
+                window.location.href = data.url;
+              }
+            });
+        </script>

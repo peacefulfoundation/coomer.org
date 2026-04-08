@@ -1,16 +1,17 @@
 ---
+const env = Astro.locals.runtime.env;
 import Post from '@/components/Post.astro';
 import Card from '@/components/ui/card.astro';
 import CardContent from '@/components/ui/card-content.astro';
 import Skeleton from '@/components/ui/skeleton.astro';
+import { listImagePosts } from '@/lib/services/posts';
 
 interface Props {
-  workerUrl: string;
   isLoggedIn?: boolean;
   kofiUsername?: string;
 }
 
-const { workerUrl, isLoggedIn = false, kofiUsername = 'coomerorg' } = Astro.props;
+const { isLoggedIn = false, kofiUsername = 'coomerorg' } = Astro.props;
 
 interface PostData {
   id: string;
@@ -21,26 +22,26 @@ let initialPosts: PostData[] = [];
 let initialCursor: string | null = null;
 
 try {
-  const url = new URL(`${workerUrl}/`);
-  url.searchParams.append('limit', '3');
-  const response = await fetch(url.toString());
-  if (response.ok) {
-    const data = await response.json();
-    initialPosts = data.posts || [];
-    initialCursor = data.cursor || null;
-  }
+  const data = await listImagePosts(
+    env.IMAGES_BUCKET,
+    Astro.url,
+    '3',
+    null
+  );
+  initialPosts = data.posts;
+  initialCursor = data.cursor;
 } catch (e) {
   console.error('Failed to fetch initial posts:', e);
 }
 ---
 
-<div class="space-y-4" id="post-list" data-worker-url={workerUrl} data-cursor={initialCursor || ''} data-logged-in={isLoggedIn} data-kofi={kofiUsername}>
+<div class="space-y-4" id="post-list" data-cursor={initialCursor || ''} data-logged-in={isLoggedIn} data-kofi={kofiUsername}>
   <div id="posts-container" class="space-y-4">
     {initialPosts.map((post) => (
       <Post id={post.id} imageUrl={post.imageUrl} isLoggedIn={isLoggedIn} kofiUsername={kofiUsername} />
     ))}
   </div>
-  
+
   <div id="loading-indicator" class="hidden space-y-4">
     {[1, 2, 3].map(() => (
       <Card>
@@ -53,7 +54,7 @@ try {
       </Card>
     ))}
   </div>
-  
+
   <p id="error-message" class="hidden text-red-500"></p>
   <div id="load-trigger" class="h-10"></div>
   <p id="end-message" class="hidden text-center text-muted-foreground">
@@ -62,9 +63,10 @@ try {
 </div>
 
 <script>
-  document.addEventListener('astro:page-load', () => {
+  function initializePostList() {
     const container = document.getElementById('post-list');
-    if (!container) return;
+    if (!container || container.dataset.initialized === 'true') return;
+    container.dataset.initialized = 'true';
 
     const postsContainer = document.getElementById('posts-container');
     const loadingIndicator = document.getElementById('loading-indicator');
@@ -72,7 +74,6 @@ try {
     const loadTrigger = document.getElementById('load-trigger');
     const endMessage = document.getElementById('end-message');
 
-    const workerUrl = container.dataset.workerUrl;
     const isLoggedIn = container.dataset.loggedIn === 'true';
     const kofiUsername = container.dataset.kofi;
     let cursor = container.dataset.cursor || null;
@@ -97,7 +98,7 @@ try {
       errorMessage?.classList.add('hidden');
 
       try {
-        const url = new URL(`${workerUrl}/`);
+        const url = new URL('/api/posts', window.location.origin);
         url.searchParams.append('limit', '3');
         if (cursor) url.searchParams.append('cursor', cursor);
 
@@ -111,7 +112,8 @@ try {
         }
 
         const data = await response.json();
-        cursor = data.cursor;
+        cursor = data.cursor ?? null;
+        container!.dataset.cursor = cursor || '';
         hasMore = !!cursor;
 
         data.posts.forEach((post: { id: string; imageUrl: string }) => {
@@ -124,6 +126,44 @@ try {
                 </div>
                 <div class="flex items-center justify-between px-4 py-2">
                   <p class="ml-1 text-left text-sm font-medium text-muted-foreground">${post.id}</p>
+                  <div class="flex items-center gap-2">
+                    <div class="relative inline-flex">
+                      <button
+                        type="button"
+                        class="inline-flex w-fit items-center justify-center gap-2 whitespace-nowrap rounded-md rounded-full border-[1.5px] border-black px-4 py-1.5 text-sm font-medium font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-black hover:text-white donate-btn gap-1"
+                        data-post-id="${post.id}"
+                        data-logged-in="${String(isLoggedIn)}"
+                        data-kofi="${kofiUsername || 'coomerorg'}"
+                      >
+                        <svg class="h-4 w-4 text-pink-500" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                        </svg>
+                        Donate
+                        ${!isLoggedIn ? '<span class="ml-1 text-xs">(login)</span>' : ''}
+                      </button>
+                      ${
+                        !isLoggedIn
+                          ? '<span class="absolute -right-1.5 -top-1.5 flex items-center justify-center rounded-full bg-background p-1"><svg class="size-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0110 0v4"></path></svg></span>'
+                          : ''
+                      }
+                    </div>
+                    <div class="relative inline-flex">
+                      <button
+                        type="button"
+                        class="inline-flex h-10 w-10 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground download-btn rounded-full text-muted-foreground"
+                        data-url="${post.imageUrl}"
+                        data-filename="${post.id}.jpg"
+                      >
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="18" cy="5" r="3"></circle>
+                          <circle cx="6" cy="12" r="3"></circle>
+                          <circle cx="18" cy="19" r="3"></circle>
+                          <path d="M8.59 13.51l6.83 3.98"></path>
+                          <path d="M15.41 6.51L8.59 10.49"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -146,5 +186,8 @@ try {
         loadingIndicator?.classList.add('hidden');
       }
     }
-  });
+  }
+
+  initializePostList();
+  document.addEventListener('astro:page-load', initializePostList);
 </script>

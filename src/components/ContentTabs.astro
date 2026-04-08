@@ -7,26 +7,25 @@ import { Image, Video, Lock } from '@lucide/astro';
 interface Props {
   isLoggedIn: boolean;
   isKofiMember: boolean;
-  workerUrl: string;
   kofiUsername?: string;
 }
 
-const { isLoggedIn, isKofiMember, workerUrl, kofiUsername = 'coomerorg' } = Astro.props;
+const { isLoggedIn, isKofiMember, kofiUsername = 'coomerorg' } = Astro.props;
 const canAccessVideos = isLoggedIn && isKofiMember;
 ---
 
 <div class="space-y-6">
   <h1 class="text-2xl font-bold">begin the scrooooooling!!!</h1>
-  
-  <div class="flex flex-grow space-x-3" id="tab-buttons">
+
+  <div class="flex grow space-x-3" id="tab-buttons">
     <Button variant="default" class="tab-btn" data-tab="images">
       <Image class="mr-2 h-4 w-4" />
       memes
     </Button>
-    
-    <Button 
-      variant="secondary" 
-      class="tab-btn" 
+
+    <Button
+      variant="secondary"
+      class="tab-btn"
       data-tab="videos"
       showLock={!canAccessVideos}
       disabled={isLoggedIn && !isKofiMember}
@@ -39,9 +38,9 @@ const canAccessVideos = isLoggedIn && isKofiMember;
   </div>
 
   <div id="tab-images" class="tab-content">
-    <PostList workerUrl={workerUrl} isLoggedIn={isLoggedIn} kofiUsername={kofiUsername} />
+    <PostList isLoggedIn={isLoggedIn} kofiUsername={kofiUsername} />
   </div>
-  
+
   <div id="tab-videos" class="tab-content hidden">
     {canAccessVideos ? (
       <VideoList />
@@ -77,7 +76,7 @@ const canAccessVideos = isLoggedIn && isKofiMember;
     buttons.forEach(btn => {
       btn.addEventListener('click', (e) => {
         const tab = btn.getAttribute('data-tab');
-        
+
         if (tab === 'videos' && !isLoggedIn) {
           window.location.href = '/api/auth/signin/discord?callbackUrl=' + encodeURIComponent(window.location.href);
           return;

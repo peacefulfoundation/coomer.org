@@ -53,18 +53,26 @@ const { id, imageUrl, isLoggedIn = false, kofiUsername = 'coomerorg', showCommen
 </Card>
 
 <script>
-  document.addEventListener('astro:page-load', () => {
-    // Download handler
-    document.querySelectorAll('.download-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const url = btn.getAttribute('data-url');
-        const filename = btn.getAttribute('data-filename');
+  function initializePostActions() {
+    if (document.documentElement.dataset.postActionsInitialized === 'true') return;
+    document.documentElement.dataset.postActionsInitialized = 'true';
+
+    document.addEventListener('click', async (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const downloadButton = target.closest('.download-btn');
+      if (downloadButton) {
+        const url = downloadButton.getAttribute('data-url');
+        const filename = downloadButton.getAttribute('data-filename');
         if (!url || !filename) return;
 
         try {
-          const response = await fetch(`/api/download?imageUrl=${encodeURIComponent(url)}&filename=${encodeURIComponent(filename)}`);
+          const response = await fetch(
+            `/api/download?imageUrl=${encodeURIComponent(url)}&filename=${encodeURIComponent(filename)}`
+          );
           if (!response.ok) throw new Error('Download failed');
-          
+
           const blob = await response.blob();
           const blobUrl = URL.createObjectURL(blob);
           const link = document.createElement('a');
@@ -77,44 +85,50 @@ const { id, imageUrl, isLoggedIn = false, kofiUsername = 'coomerorg', showCommen
         } catch (e) {
           console.error(e);
         }
-      });
-    });
+        return;
+      }
 
-    // Donate handler
-    document.querySelectorAll('.donate-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const postId = btn.getAttribute('data-post-id');
-        const isLoggedIn = btn.getAttribute('data-logged-in') === 'true';
-        const kofi = btn.getAttribute('data-kofi');
+      const donateButton = target.closest('.donate-btn');
+      if (!donateButton) return;
 
-        if (!isLoggedIn) {
-          window.location.href = '/api/auth/signin/discord?callbackUrl=' + encodeURIComponent(window.location.href);
+      const postId = donateButton.getAttribute('data-post-id');
+      const isLoggedIn = donateButton.getAttribute('data-logged-in') === 'true';
+      const kofi = donateButton.getAttribute('data-kofi');
+
+      if (!isLoggedIn) {
+        window.location.href =
+          '/api/auth/signin/discord?callbackUrl=' + encodeURIComponent(window.location.href);
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/donate/intent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ postId }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          alert(error.error || 'Failed to start donation');
           return;
         }
 
-        try {
-          const response = await fetch('/api/donate/intent', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ postId }),
-          });
-
-          if (!response.ok) {
-            const error = await response.json();
-            alert(error.error || 'Failed to start donation');
-            return;
-          }
-
-          const { intentId } = await response.json();
-          localStorage.setItem('pendingDonationIntent', JSON.stringify({ intentId, postId, timestamp: Date.now() }));
-          window.open(`https://ko-fi.com/${kofi}`, '_blank');
-          alert('Ko-fi opened! After donating, visit /donate/complete to leave your comment.');
-        } catch (e) {
-          console.error(e);
-          alert('Something went wrong');
-        }
-      });
+        const { intentId } = await response.json();
+        localStorage.setItem(
+          'pendingDonationIntent',
+          JSON.stringify({ intentId, postId, timestamp: Date.now() })
+        );
+        window.open(`https://ko-fi.com/${kofi}`, '_blank');
+        alert('Ko-fi opened! After donating, visit /donate/complete to leave your comment.');
+      } catch (e) {
+        console.error(e);
+        alert('Something went wrong');
+      }
     });
-  });
+  }
+
+  initializePostActions();
+  document.addEventListener('astro:page-load', initializePostActions);
 </script>
