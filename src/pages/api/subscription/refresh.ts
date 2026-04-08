@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { createAuth } from '@/lib/auth';
+
+import { createAuth, getSessionUserId } from '@/lib/auth';
 import { createDb } from '@/lib/db';
 import { verifyKofiMembership } from '@/lib/services/discord';
 
@@ -11,8 +12,9 @@ export const POST: APIRoute = async (context) => {
   const db = createDb(env.DB);
 
   const session = await auth.api.getSession({ headers: context.request.headers });
+  const userId = getSessionUserId(session);
   
-  if (!session?.user) {
+  if (!session?.user || !userId) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' },
@@ -22,7 +24,7 @@ export const POST: APIRoute = async (context) => {
   const user = await db
     .selectFrom('user')
     .selectAll()
-    .where('id', '=', session.user.id)
+    .where('id', '=', userId)
     .executeTakeFirst();
 
   if (!user) {
@@ -46,7 +48,7 @@ export const POST: APIRoute = async (context) => {
   const account = await db
     .selectFrom('account')
     .select(['access_token'])
-    .where('user_id', '=', session.user.id)
+    .where('user_id', '=', userId)
     .where('provider_id', '=', 'discord')
     .executeTakeFirst();
 
@@ -71,7 +73,7 @@ export const POST: APIRoute = async (context) => {
         last_role_check: Date.now(),
         updated_at: Date.now(),
       })
-      .where('id', '=', session.user.id)
+      .where('id', '=', userId)
       .execute();
 
     return new Response(JSON.stringify({

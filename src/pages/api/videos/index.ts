@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { createAuth } from '@/lib/auth';
+
+import { createAuth, getSessionUserId } from '@/lib/auth';
 import { createDb } from '@/lib/db';
 import { createMuxClient, listVideoAssets, getSignedPlaybackUrl } from '@/lib/services/mux';
 
@@ -9,8 +10,9 @@ export const GET: APIRoute = async (context) => {
   const db = createDb(env.DB);
 
   const session = await auth.api.getSession({ headers: context.request.headers });
+  const userId = getSessionUserId(session);
 
-  if (!session?.user) {
+  if (!session?.user || !userId) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' },
@@ -20,7 +22,7 @@ export const GET: APIRoute = async (context) => {
   const user = await db
     .selectFrom('user')
     .select(['is_kofi_member'])
-    .where('id', '=', session.user.id)
+    .where('id', '=', userId)
     .executeTakeFirst();
 
   if (!user?.is_kofi_member) {

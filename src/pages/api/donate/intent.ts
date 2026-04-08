@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { createAuth } from '@/lib/auth';
+
+import { createAuth, getSessionUserId } from '@/lib/auth';
 import { createDb } from '@/lib/db';
 import { createIntentExpiresAt } from '@/lib/services/donations';
 
@@ -9,8 +10,9 @@ export const POST: APIRoute = async (context) => {
   const db = createDb(env.DB);
 
   const session = await auth.api.getSession({ headers: context.request.headers });
+  const userId = getSessionUserId(session);
 
-  if (!session?.user) {
+  if (!session?.user || !userId) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' },
@@ -42,7 +44,7 @@ export const POST: APIRoute = async (context) => {
 
   await db.insertInto('donation_intent').values({
     id: intentId,
-    user_id: session.user.id,
+    user_id: userId,
     post_id: postId,
     created_at: now,
     expires_at: expiresAt.getTime(),
@@ -64,8 +66,9 @@ export const GET: APIRoute = async (context) => {
   const db = createDb(env.DB);
 
   const session = await auth.api.getSession({ headers: context.request.headers });
+  const userId = getSessionUserId(session);
 
-  if (!session?.user) {
+  if (!session?.user || !userId) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' },
@@ -75,7 +78,7 @@ export const GET: APIRoute = async (context) => {
   const intents = await db
     .selectFrom('donation_intent')
     .selectAll()
-    .where('user_id', '=', session.user.id)
+    .where('user_id', '=', userId)
     .where('completed', '=', 0)
     .where('expires_at', '>', Date.now())
     .orderBy('created_at', 'desc')

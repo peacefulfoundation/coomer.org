@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+
 import { createDb } from '@/lib/db';
 import { verifyDiscordSignature, InteractionType, InteractionResponseType } from '@/lib/services/discord';
 

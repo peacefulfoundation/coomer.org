@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { createAuth } from '@/lib/auth';
+
+import { createAuth, getSessionUserId } from '@/lib/auth';
 import { createDb } from '@/lib/db';
 
 export const GET: APIRoute = async (context) => {
@@ -8,8 +9,9 @@ export const GET: APIRoute = async (context) => {
   const db = createDb(env.DB);
 
   const session = await auth.api.getSession({ headers: context.request.headers });
+  const userId = getSessionUserId(session);
 
-  if (!session?.user) {
+  if (!session?.user || !userId) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' },
@@ -19,14 +21,14 @@ export const GET: APIRoute = async (context) => {
   const donations = await db
     .selectFrom('donation')
     .selectAll()
-    .where('user_id', '=', session.user.id)
+    .where('user_id', '=', userId)
     .where('post_id', '!=', 'unassigned')
     .execute();
 
   const existingComments = await db
     .selectFrom('comment')
     .select(['donation_id'])
-    .where('user_id', '=', session.user.id)
+    .where('user_id', '=', userId)
     .execute();
 
   const commentedDonationIds = new Set(existingComments.map(c => c.donation_id));

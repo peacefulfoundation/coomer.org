@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { createAuth } from '@/lib/auth';
+
+import { createAuth, getSessionUserId } from '@/lib/auth';
 import { createDb } from '@/lib/db';
 import { createApprovalMessage, sendDiscordMessage, type CommentApprovalData } from '@/lib/services/discord';
 
@@ -9,8 +10,9 @@ export const POST: APIRoute = async (context) => {
   const db = createDb(env.DB);
 
   const session = await auth.api.getSession({ headers: context.request.headers });
+  const userId = getSessionUserId(session);
 
-  if (!session?.user) {
+  if (!session?.user || !userId) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' },
@@ -47,7 +49,7 @@ export const POST: APIRoute = async (context) => {
     .selectFrom('donation')
     .selectAll()
     .where('id', '=', donationId)
-    .where('user_id', '=', session.user.id)
+    .where('user_id', '=', userId)
     .executeTakeFirst();
 
   if (!donation) {
@@ -73,7 +75,7 @@ export const POST: APIRoute = async (context) => {
   const user = await db
     .selectFrom('user')
     .selectAll()
-    .where('id', '=', session.user.id)
+    .where('id', '=', userId)
     .executeTakeFirst();
 
   if (!user) {
@@ -88,7 +90,7 @@ export const POST: APIRoute = async (context) => {
   await db.insertInto('comment').values({
     id: commentId,
     donation_id: donationId,
-    user_id: session.user.id,
+    user_id: userId,
     post_id: donation.post_id,
     content: content.trim(),
     status: 'pending',

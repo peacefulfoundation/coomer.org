@@ -10,7 +10,8 @@ export const GET: APIRoute = async ({ request }) => {
   }
 
   try {
-    const response = await fetch(imageUrl);
+    const resolvedImageUrl = new URL(imageUrl, request.url);
+    const response = await fetch(resolvedImageUrl);
 
     if (!response.ok) {
       return new Response('Failed to fetch image', { status: response.status });

@@ -1,11 +1,12 @@
 ---
+const env = Astro.locals.runtime.env;
 import Layout from '@/layouts/Layout.astro';
 import Post from '@/components/Post.astro';
 import Button from '@/components/ui/button.astro';
+import { getImagePostById } from '@/lib/services/posts';
 import { ArrowLeft } from '@lucide/astro';
 
 const { id } = Astro.params;
-const env = Astro.locals.runtime.env;
 const user = Astro.locals.user;
 const isLoggedIn = !!user;
 const kofiUsername = env.KOFI_USERNAME || 'coomerorg';
@@ -22,10 +23,7 @@ interface PostData {
 let post: PostData | null = null;
 
 try {
-  const response = await fetch(`${env.WORKER_URL}/${id}`);
-  if (response.ok) {
-    post = await response.json();
-  }
+  post = await getImagePostById(env.IMAGES_BUCKET, Astro.url, id);
 } catch (e) {
   console.error('Failed to fetch post:', e);
 }

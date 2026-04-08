@@ -1,10 +1,11 @@
 import type { APIRoute } from 'astro';
+
 import { createDb } from '@/lib/db';
 import { calculateCommentOpacity } from '@/lib/services/donations';
 
 export const GET: APIRoute = async (context) => {
-  const { postId } = context.params;
   const env = context.locals.runtime.env;
+  const { postId } = context.params;
   const db = createDb(env.DB);
 
   if (!postId) {

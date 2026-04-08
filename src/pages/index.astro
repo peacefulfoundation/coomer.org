@@ -12,9 +12,7 @@ const user = Astro.locals.user;
 const isLoggedIn = !!user;
 const isKofiMember = user?.is_kofi_member === 1;
 
-const env = Astro.locals.runtime.env;
-const workerUrl = env.WORKER_URL;
-const kofiUsername = env.KOFI_USERNAME || 'coomerorg';
+const kofiUsername = Astro.locals.runtime.env.KOFI_USERNAME || 'peacefulfoundation';
 ---
 
 <Layout title="Home">
@@ -32,12 +30,11 @@ const kofiUsername = env.KOFI_USERNAME || 'coomerorg';
       </Button>
     </CardFooter>
   </Card>
-  
+
   <div class="mx-auto w-full max-w-screen-sm py-8 md:py-12">
     <ContentTabs
       isLoggedIn={isLoggedIn}
       isKofiMember={isKofiMember}
-      workerUrl={workerUrl}
       kofiUsername={kofiUsername}
     />
   </div>
