@@ -1,0 +1,43 @@
+---
+const leftLinks: string[] = ['ethos', 'not-an-nft'];
+
+const rightLinks: { name: string; url: string }[] = [
+  {
+    name: 'quiteasily',
+    url: 'https://quiteasily.org',
+  },
+  {
+    name: 'easypeasymethod',
+    url: 'https://easypeasymethod.org',
+  },
+];
+---
+
+<div
+  class="bg-background text-foreground border-foreground fixed bottom-6 left-6 flex gap-6 rounded-full border-2 px-6 py-4 font-semibold"
+>
+  {
+    leftLinks.map((link) => (
+      <a href={`/${link}`}>
+        /<span class="underline-offset-4 hover:underline">{link}</span>
+      </a>
+    ))
+  }
+</div>
+
+<div
+  class="bg-background text-foreground border-foreground fixed right-6 bottom-6 flex gap-6 rounded-full border-2 px-6 py-4 font-semibold"
+>
+  {
+    rightLinks.map((link) => (
+      <a
+        class="underline-offset-4 hover:underline"
+        href={link.url}
+        target="_blank"
+        rel="noopener"
+      >
+        {link.name}
+      </a>
+    ))
+  }
+</div>

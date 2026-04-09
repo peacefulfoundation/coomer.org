@@ -1,116 +1,43 @@
-# coomer.org
+# Astro Starter Kit: Minimal
 
-A full-stack Astro SSR application deployed on Cloudflare Workers.
-
-## Stack
-
-- **Framework**: Astro 5 (SSR) with `@astrojs/cloudflare` adapter
-- **Styling**: Tailwind CSS v4 with `@tailwindcss/vite`
-- **Database**: Cloudflare D1 (SQLite) with Kysely query builder
-- **Auth**: better-auth with Discord OAuth
-- **Video**: Mux for signed video streaming
-- **Icons**: `@lucide/astro` (Astro-native components)
-- **UI**: Custom Astro components using `tailwind-variants` and `class-variance-authority`
-
-## Architecture
-
-```
-src/
-├── components/           # Astro UI components
-│   ├── ui/              # Base components (button, card, avatar, etc.)
-│   ├── Post.astro       # Image post with donations
-│   ├── CommentSection.astro
-│   ├── ContentTabs.astro
-│   └── ...
-├── layouts/
-│   └── Layout.astro     # Base HTML layout
-├── lib/
-│   ├── auth.ts          # better-auth configuration
-│   ├── db.ts            # Kysely D1 initialization
-│   ├── db.types.ts      # Database type definitions
-│   ├── utils.ts         # Utilities (cn helper)
-│   └── services/        # Backend services
-│       ├── discord.ts   # Discord API & bot interactions
-│       ├── mux.ts       # Mux video API
-│       └── donations.ts # Ko-fi donation logic
-├── pages/
-│   ├── index.astro
-│   ├── profile.astro
-│   ├── [id].astro       # Dynamic post pages
-│   ├── donate/complete.astro
-│   └── api/             # API routes
-│       ├── auth/[...all].ts
-│       ├── videos/index.ts
-│       ├── donate/
-│       ├── comments/
-│       └── discord/interactions.ts
-├── styles/
-│   └── global.css       # Tailwind v4 theme
-└── middleware.ts        # Auth session handling
+```sh
+pnpm create astro@latest -- --template minimal
 ```
 
-## Setup
+> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
 
-### 1. Create Cloudflare Resources
+## 🚀 Project Structure
 
-```bash
-# D1 Database
-pnpm wrangler d1 create coomer-db
+Inside of your Astro project, you'll see the following folders and files:
 
-# KV Namespace (for Astro sessions)
-pnpm wrangler kv namespace create SESSION
+```text
+/
+├── public/
+├── src/
+│   └── pages/
+│       └── index.astro
+└── package.json
 ```
 
-Update `wrangler.jsonc` with the IDs.
+Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
 
-### 2. Run Migrations
+There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
 
-```bash
-pnpm db:migrate:local   # Local development
-pnpm db:migrate:remote  # Production
-```
+Any static assets, like images, can be placed in the `public/` directory.
 
-### 3. Set Secrets
+## 🧞 Commands
 
-```bash
-pnpm wrangler secret put DISCORD_CLIENT_ID
-pnpm wrangler secret put DISCORD_CLIENT_SECRET
-pnpm wrangler secret put BETTER_AUTH_SECRET
-pnpm wrangler secret put MUX_TOKEN_ID
-pnpm wrangler secret put MUX_TOKEN_SECRET
-pnpm wrangler secret put MUX_SIGNING_KEY_ID
-pnpm wrangler secret put MUX_SIGNING_KEY_PRIVATE
-pnpm wrangler secret put DISCORD_BOT_TOKEN
-pnpm wrangler secret put DISCORD_PUBLIC_KEY
-pnpm wrangler secret put KOFI_VERIFICATION_TOKEN
-```
+All commands are run from the root of the project, from a terminal:
 
-### 4. Development
+| Command                | Action                                           |
+| :--------------------- | :----------------------------------------------- |
+| `pnpm install`         | Installs dependencies                            |
+| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
+| `pnpm build`           | Build your production site to `./dist/`          |
+| `pnpm preview`         | Preview your build locally, before deploying     |
+| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
+| `pnpm astro -- --help` | Get help using the Astro CLI                     |
 
-```bash
-pnpm install
-pnpm dev
-```
+## 👀 Want to learn more?
 
-### 5. Deploy
-
-```bash
-pnpm build
-pnpm wrangler pages deploy dist
-```
-
-## Type Safety
-
-Generate binding types after modifying `wrangler.jsonc`:
-
-```bash
-pnpm cf-typegen
-```
-
-## Features
-
-- **Discord OAuth**: Users log in with Discord
-- **Ko-fi Membership**: Video access gated by Discord role
-- **Donation Comments**: Comments with weighted visibility based on donation amount
-- **Discord Bot**: Approval workflow via button interactions
-- **Signed Video URLs**: Mux playback with JWT tokens
+Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).

@@ -1,41 +1,26 @@
 ---
-import Layout from '@/layouts/Layout.astro';
-import ContentTabs from '@/components/ContentTabs.astro';
-import Card from '@/components/ui/card.astro';
-import CardContent from '@/components/ui/card-content.astro';
-import CardHeader from '@/components/ui/card-header.astro';
-import CardFooter from '@/components/ui/card-footer.astro';
-import Button from '@/components/ui/button.astro';
-import { ExternalLink } from '@lucide/astro';
+import '@/styles/global.css';
+import { Font } from 'astro:assets';
+import Header from '@/components/header.astro';
+import Footer from '@/components/footer.astro';
+import PostList from '@/components/post-list';
+import { env } from 'cloudflare:workers';
 
-const user = Astro.locals.user;
-const isLoggedIn = !!user;
-const isKofiMember = user?.is_kofi_member === 1;
-
-const kofiUsername = Astro.locals.runtime.env.KOFI_USERNAME || 'peacefulfoundation';
+const workerUrl = env.WORKER_URL;
 ---
 
-<Layout title="Home">
-  <Card class="mb-8 overflow-hidden md:hidden">
-    <CardHeader class="bg-lime rounded-t-lg p-4 text-black">
-      <h2 class="font-bold">coomer.org</h2>
-    </CardHeader>
-    <CardContent class="p-4">
-      <p class="text-sm">curated coomer memes</p>
-    </CardContent>
-    <CardFooter class="flex items-center justify-center pb-4">
-      <Button variant="secondary" href="/not-an-nft">
-        <ExternalLink class="mr-2 h-4 w-4" />
-        not an NFT
-      </Button>
-    </CardFooter>
-  </Card>
-
-  <div class="mx-auto w-full max-w-screen-sm py-8 md:py-12">
-    <ContentTabs
-      isLoggedIn={isLoggedIn}
-      isKofiMember={isKofiMember}
-      kofiUsername={kofiUsername}
-    />
-  </div>
-</Layout>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <Font cssVariable="--font-branding" />
+    <title>Astro</title>
+  </head>
+  <body>
+    <Header />
+    <PostList client:load workerUrl={workerUrl} />
+    <Footer />
+  </body>
+</html>
